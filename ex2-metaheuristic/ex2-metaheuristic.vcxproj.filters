@@ -29,5 +29,8 @@
     <ClInclude Include="mutation.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
+    <ClInclude Include="sampling.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
