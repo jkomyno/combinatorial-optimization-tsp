@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+#include <random>         // std::mt19937, std::random_device
 #include <unordered_set>  // std::unordered_set
 #include <vector>         // std::vector
 
@@ -9,6 +10,7 @@
 #include "PermutationPath.h"
 #include "Solver.h"
 #include "farthest_insertion.h"
+#include "population.h"
 
 template <typename T>
 class TSPSolver : public Solver<PermutationPath<T>> {
@@ -19,6 +21,9 @@ class TSPSolver : public Solver<PermutationPath<T>> {
 
     // Parameters that regulate the meta-heuristic algorithm search strategy
     MetaHeuristicsParams params;
+
+    // Random generator instance
+    std::mt19937 random_generator;
 
     // Compute the initial solution according to a heuristic.
     [[nodiscard]] PermutationPath<T> compute_initial_heuristic_solution() const noexcept {
@@ -36,7 +41,11 @@ protected:
     // Compute the initial population pool of size μ
     [[nodiscard]] std::vector<PermutationPath<T>>
     compute_initial_population_pool() noexcept override {
-        return {this->compute_initial_heuristic_solution()};
+        const size_t n = this->distance_matrix.size();
+        PermutationPath<T> heuristic_solution(this->compute_initial_heuristic_solution());
+
+        return population::generate_initial(std::move(heuristic_solution), this->params.mu, n,
+                                            this->random_generator);
     }
 
     // Compute the mating pool of size λ of the current iteration.
@@ -75,7 +84,8 @@ public:
                        const MetaHeuristicsParams& params) noexcept :
         super(),
         distance_matrix(distance_matrix),
-        params(params) {
+        params(params),
+        random_generator(std::random_device()()) {
     }
 
     ~TSPSolver() {
