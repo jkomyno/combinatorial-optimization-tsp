@@ -86,13 +86,13 @@ public:
         }
 
         // Equality boolean operator
-        bool operator==(const iterator_t& other) const {
-            return other.column == row && other.column == column;
+        friend bool operator==(const iterator_t& lhs, const iterator_t& rhs) {
+            return lhs.row == rhs.row && lhs.column == rhs.column;
         }
 
         // Inequality boolean operator
-        bool operator!=(const iterator_t& other) const {
-            return this != other;
+        friend bool operator!=(const iterator_t& lhs, const iterator_t& rhs) {
+            return !(lhs == rhs);
         }
 
         // Retrieve the (row, column) pair at the current iterator position
