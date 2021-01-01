@@ -51,6 +51,9 @@ namespace heuristic {
 			utils::perform_best_circuit_insertion(new_r, circuit, get_distance);
 		}
 
+		// Force the solution to start from the first city, 0
+		utils::shift_to_value<size_t>(circuit, 0);
+
 		return circuit;
 	}
 }

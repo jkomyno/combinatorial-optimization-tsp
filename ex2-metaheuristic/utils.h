@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include <algorithm>      // std::generate_n, std::max_element
+#include <algorithm>      // std::generate_n, std::max_element, std::find, std::rotate
 #include <iterator>       // std::next, std::inserter
 #include <limits>         // std::numeric_limits
 #include <list>           // std::list
@@ -150,5 +150,14 @@ namespace utils {
         // obtain the maximum of the maximum or minimum distances δ(r, circuit)
         const size_t new_r = it_new_r->first;
         return new_r;
+    }
+
+    // Shift a vector without removing items such that the given value is placed in first position.
+    // We assume that all elements in the vector are different and that n exists in the given
+    // vector.
+    template <typename T>
+    void inline shift_to_value(std::vector<T>& vec, const T& value) noexcept {
+        auto n_it = std::find(vec.begin(), vec.end(), value);
+        std::rotate(vec.begin(), n_it, vec.end());
     }
 }  // namespace utils
