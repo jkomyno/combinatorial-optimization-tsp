@@ -1,12 +1,14 @@
 ﻿#pragma once
 
-#include <vector>  // std::vector
+#include <unordered_set>  // std::unordered_set
+#include <vector>         // std::vector
 
 #include <shared/DistanceMatrix.h>
 
 #include "MetaHeuristicsParams.h"
 #include "PermutationPath.h"
 #include "Solver.h"
+#include "farthest_insertion.h"
 
 template <typename T>
 class TSPSolver : public Solver<PermutationPath<T>> {
@@ -18,6 +20,12 @@ class TSPSolver : public Solver<PermutationPath<T>> {
     // Parameters that regulate the meta-heuristic algorithm search strategy
     MetaHeuristicsParams params;
 
+    // Compute the initial solution according to a heuristic.
+    [[nodiscard]] PermutationPath<T> compute_initial_heuristic_solution() const noexcept {
+        std::vector<size_t> circuit(heuristic::farthest_insertion(this->distance_matrix));
+        return PermutationPath<T>(std::move(circuit), this->distance_matrix);
+    }
+
 protected:
     // Return true when the first solution is better than the second.
     [[nodiscard]] bool solution_comparator(const PermutationPath<T>& a,
@@ -25,10 +33,10 @@ protected:
         return a.cost() < b.cost();
     }
 
-    // Compute the initial solution according to a heuristic.
-    // TODO
-    [[nodiscard]] PermutationPath<T> compute_initial_heuristic_solution() const noexcept override {
-        return PermutationPath<T>({0, 1, 2, 3, 4}, this->distance_matrix);
+    // Compute the initial population pool of size μ
+    [[nodiscard]] std::vector<PermutationPath<T>>
+    compute_initial_population_pool() noexcept override {
+        return {this->compute_initial_heuristic_solution()};
     }
 
     // Compute the mating pool of size λ of the current iteration.
@@ -77,7 +85,7 @@ public:
     void solve() noexcept override {
         // generate half of the population with random permutations of the initial heuristic path,
         // and the remaining half random permutations of the sorted path of cities [0,1,...,n-1]
-        super::population_pool = {this->compute_initial_heuristic_solution()};
+        super::population_pool = this->compute_initial_population_pool();
 
         super::best_solution = {super::compute_current_best_solution()};
 

@@ -25,8 +25,8 @@ protected:
     // Return true when the first solution is better than the second.
     [[nodiscard]] virtual bool solution_comparator(const T& a, const T& b) const noexcept = 0;
 
-    // Compute the initial solution according to a heuristic
-    [[nodiscard]] virtual T compute_initial_heuristic_solution() const noexcept = 0;
+    // Compute the initial population pool
+    [[nodiscard]] virtual std::vector<T> compute_initial_population_pool() noexcept = 0;
 
     // Compute the mating pool of size λ of the current iteration
     [[nodiscard]] virtual std::vector<T> compute_current_mating_pool() noexcept = 0;
