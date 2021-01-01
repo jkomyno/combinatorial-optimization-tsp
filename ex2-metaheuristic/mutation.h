@@ -11,6 +11,7 @@ namespace mutation {
     inline void swap(PermutationPath<T>& path, size_t x, size_t y) noexcept {
         using std::swap;
         swap(path[x], path[y]);
+        path.reset_cost();
     }
 
     // Perform the left-rotation mutation on the given path.
@@ -24,6 +25,7 @@ namespace mutation {
         size_t left = path[x];
         std::copy(path.begin() + x + 1, path.begin() + y + 1, path.begin() + x);
         path[y] = left;
+        path.reset_cost();
     }
 
     // Perform the right-rotation mutation on the given path.
@@ -37,6 +39,7 @@ namespace mutation {
         size_t right = path[y];
         std::copy(path.begin() + x, path.begin() + y, path.begin() + x + 1);
         path[x] = right;
+        path.reset_cost();
     }
 
     // Perform the inversion mutation on the given path, aka a 2-opt move.
@@ -55,5 +58,7 @@ namespace mutation {
             ++i;
             --j;
         }
+
+        path.reset_cost();
     }
 }  // namespace mutation
