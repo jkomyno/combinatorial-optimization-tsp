@@ -11,6 +11,7 @@
 #include "Solver.h"
 #include "farthest_insertion.h"
 #include "population.h"
+#include "selection.h"
 
 template <typename T>
 class TSPSolver : public Solver<PermutationPath<T>> {
@@ -49,9 +50,10 @@ protected:
     }
 
     // Compute the mating pool of size λ of the current iteration.
-    // TODO
     [[nodiscard]] std::vector<PermutationPath<T>> compute_current_mating_pool() noexcept override {
-        return {this->compute_initial_heuristic_solution()};
+        const size_t k = 2;
+        return selection::tournament(super::population_pool, this->params.lambda, k,
+                                     this->random_generator);
     }
 
     // Compute the new generation of λ offsprings from a mating pool of size λ.

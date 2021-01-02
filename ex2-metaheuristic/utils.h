@@ -160,4 +160,14 @@ namespace utils {
         auto n_it = std::find(vec.begin(), vec.end(), value);
         std::rotate(vec.begin(), n_it, vec.end());
     }
+
+    template <typename T>
+    inline T id(T&& x) noexcept {
+        return std::forward<T>(x);
+    }
+
+    template <typename T>
+    inline auto to_pointer(T& x) noexcept {
+        return &x;
+    }
 }  // namespace utils

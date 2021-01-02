@@ -16,7 +16,7 @@ namespace sampling {
         std::unordered_set<size_t> sample_indexes;
         sample_indexes.reserve(k);
 
-        for (size_t i = n - k - 1; i < n; ++i) {
+        for (size_t i = n - k; i < n; ++i) {
             const size_t v = distribution(random, param_t(0, i));
 
             // If v is new, add it. If v i already in sample_indexes, add i, which definitely isn't
@@ -31,18 +31,28 @@ namespace sampling {
     }
 
     // Sample k distinct elements from the elements in range [first, last].
-    template <typename T, class RandomIt, class URBG>
-    std::vector<T> sample_from_range(RandomIt first, RandomIt last, size_t k, URBG&& random) {
+    // Before picking the elements, apply the unary function map_f.
+    template <class RandomIt, class URBG, class UnaryF>
+    auto sample_from_range(RandomIt first, RandomIt last, size_t k, URBG&& random, UnaryF&& map_f) {
+        using result_t = decltype(map_f(*first));
+
         size_t n = std::distance(first, last);
 
-        std::vector<T> sample_values;
+        std::vector<result_t> sample_values;
         sample_values.reserve(k);
 
         for (auto i : sample_indexes(n, k, random)) {
             const auto v = std::next(first, i);
-            sample_values.emplace_back(*v);
+            sample_values.emplace_back(map_f(*v));
         }
 
         return sample_values;
+    }
+
+    // Sample k distinct elements from the elements in range [first, last].
+    template <class RandomIt, class URBG>
+    auto sample_from_range(RandomIt first, RandomIt last, size_t k, URBG&& random) {
+        const auto id = [](const auto& x) { return x; };
+        return sample_from_range<RandomIt, URBG>(first, last, k, random, id);
     }
 }  // namespace sampling
