@@ -18,7 +18,37 @@
     <ClInclude Include="shared\DistanceMatrix.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
+    <ClInclude Include="shared\EdgeWeightType.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="shared\euclidean_distance.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="shared\EuclideanPointReader.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="shared\geodesic_distance.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="shared\GeodesicPointReader.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
     <ClInclude Include="shared\Matrix.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="shared\point.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="shared\point_reader_factory.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="shared\PointReader.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="shared\shared_utils.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="shared\read_tsp_file.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
   </ItemGroup>
