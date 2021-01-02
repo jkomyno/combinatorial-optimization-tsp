@@ -67,7 +67,7 @@ protected:
             return this->solution_comparator(a, b);
         };
 
-        auto best_it = std::max_element(this->population_pool.cbegin(),
+        auto best_it = std::min_element(this->population_pool.cbegin(),
                                         this->population_pool.cend(), comparator);
 
         return T(*best_it);
