@@ -3,6 +3,8 @@
 #include <random>         // std::uniform_int_distribution
 #include <unordered_set>  // std::unordered_set
 
+#include "utils.h"
+
 namespace sampling {
     // Sample k distinct indexes from [0, ..., n-1], k < n.
     // It implements Robert Floyd's algorithm for sampling without replacement.
@@ -28,6 +30,23 @@ namespace sampling {
         }
 
         return sample_indexes;
+    }
+
+    template <bool Sort, class URBG>
+    std::pair<size_t, size_t> sample_pair(size_t n, URBG&& random) noexcept {
+        std::unordered_set<size_t> indexes_set(sample_indexes(n, 2, random));
+
+        size_t i = utils::pop(indexes_set);
+        size_t j = utils::pop(indexes_set);
+
+        if constexpr (Sort) {
+            if (j < i) {
+                using std::swap;
+                swap(i, j);
+            }
+        }
+
+        return {i, j};
     }
 
     // Sample k distinct elements from the elements in range [first, last].

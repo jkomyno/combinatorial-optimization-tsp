@@ -95,6 +95,13 @@ namespace utils {
         return set;
     }
 
+    // Extract an elements from a node-based collection (std::vector, std::unordered_set, etc)
+    template <typename T>
+    [[nodiscard]] typename T::value_type pop(T& collection) {
+        auto node = collection.extract(std::begin(collection));
+        return std::move(node.value());
+    }
+
     // Return the maximum element in a list of elements.
     // This std::max_element wrapper is necessary to force the compiler to choose the right overload
     // of a higher-order function at compile-time.
