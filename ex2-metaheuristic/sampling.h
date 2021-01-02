@@ -95,4 +95,37 @@ namespace sampling {
 
         return probabilities;
     }
+
+    template <class URBG>
+    std::pair<size_t, size_t> sample_constrained_window(size_t low, size_t high, size_t delta_min,
+                                                        size_t delta_max,
+                                                        URBG&& random_generator) noexcept {
+
+        using distr_t = std::uniform_real_distribution<double>;
+        using param_t = typename distr_t::param_type;
+        distr_t distribution;
+
+        size_t space = high - low - delta_min;
+
+        // extract two random numbers from [0,1), u_1 < u_2
+        double u_1 = distribution(random_generator, param_t(0, 1));
+        double u_2 = distribution(random_generator, param_t(0, 1));
+        if (u_1 > u_2) {
+            using std::swap;
+            swap(u_1, u_2);
+        }
+
+        double x_1 = u_1 * space;
+        double x_2 = u_2 * space;
+
+        size_t a_1 = low + static_cast<int>(x_1);
+        size_t a_2 = low + static_cast<int>(x_2) + delta_min;
+
+        // clip upper bound
+        if (a_2 > a_1 + delta_max) {
+            a_2 = a_1 + delta_max;
+        }
+
+        return {a_1, a_2};
+    }
 }  // namespace sampling
