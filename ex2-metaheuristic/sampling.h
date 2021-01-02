@@ -1,6 +1,6 @@
 #pragma once
 
-#include <algorithm>      // std::transform
+#include <algorithm>      // std::transform, std::generate
 #include <iterator>       // std::back_inserter
 #include <random>         // std::uniform_int_distribution, std::uniform_real_distribution
 #include <unordered_set>  // std::unordered_set
@@ -127,5 +127,25 @@ namespace sampling {
         }
 
         return {a_1, a_2};
+    }
+
+    // Sample k elements with replacement from a data vector according to the given discrete range
+    // of probabilities.
+    template <typename T, class RandomIt, class URBG>
+    std::vector<T> sample_from_probabilities(const std::vector<T>& data, size_t k, RandomIt first,
+                                             RandomIt last, URBG&& random_generator) noexcept {
+        std::discrete_distribution<size_t> distribution(first, last);
+
+        std::vector<size_t> indexes(k);
+        std::generate(indexes.begin(), indexes.end(),
+                      [&]() { return distribution(random_generator); });
+
+        std::vector<T> selection;
+        selection.reserve(k);
+
+        std::transform(indexes.begin(), indexes.end(), std::back_inserter(selection),
+                       [&data](size_t index) { return data[size_t]; });
+
+        return selection;
     }
 }  // namespace sampling
