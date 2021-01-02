@@ -30,13 +30,16 @@ namespace population {
     // Generate the initial population of feasible solutions until the population pool reaches size
     // μ. Each path in the population has size n, with cities represented as numbers in [0, n-1].
     // The population is composed of random permutations of a given heuristic path.
-    template <typename T, class URBG>
+    template <bool include_heuristic, typename T, class URBG>
     std::vector<PermutationPath<T>> generate_initial(const PermutationPath<T>& heuristic_path,
                                                      size_t mu, size_t n,
                                                      URBG&& random_generator) noexcept {
         std::vector<PermutationPath<T>> population_pool;
         population_pool.reserve(mu);
-        population_pool.emplace_back(heuristic_path);
+
+        if constexpr (include_heuristic) {
+            population_pool.emplace_back(heuristic_path);
+        }
 
         // Generate random feasible solutions until the population pool reaches size μ.
         detail::generate_random(population_pool, heuristic_path, mu, random_generator);
