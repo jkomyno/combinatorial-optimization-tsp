@@ -20,16 +20,46 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="MetaHeuristicParams.h">
-      <Filter>File di intestazione</Filter>
-    </ClInclude>
     <ClInclude Include="PermutationPath.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
     <ClInclude Include="mutation.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
+    <ClInclude Include="Solver.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="TSPSolver.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="utils.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="MetaHeuristicsParams.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="farthest_insertion.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="population.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="selection.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="mating.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="crossover.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
     <ClInclude Include="sampling.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="neighborhood.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="local_search.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
   </ItemGroup>

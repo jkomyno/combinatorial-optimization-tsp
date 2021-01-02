@@ -118,7 +118,7 @@ protected:
     }
 
     // Select new generation's population pool.
-    // TODO
+    // TODO: implement elitism
     [[nodiscard]] std::vector<PermutationPath<T>> select_new_generation(
         std::vector<PermutationPath<T>>& mating_pool,
         std::vector<PermutationPath<T>>& offspring_pool) noexcept override {
@@ -128,6 +128,7 @@ protected:
     // Run a single iteration.
     void perform_iteration() noexcept {
         super::perform_iteration();
+        this->improve_generation(super::population_pool);
     }
 
 public:
