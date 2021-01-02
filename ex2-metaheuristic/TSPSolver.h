@@ -11,6 +11,7 @@
 #include "PermutationPath.h"
 #include "Solver.h"
 #include "farthest_insertion.h"
+#include "local_search.h"
 #include "mating.h"
 #include "mutation.h"
 #include "population.h"
@@ -31,7 +32,7 @@ class TSPSolver : public Solver<PermutationPath<T>> {
     std::mt19937 random_generator;
 
     // Size of the path, initialized at the beginning of ::solve()
-    mutable size_t n = 0;
+    const size_t n = this->distance_matrix.size();
 
     // Compute the initial solution according to a heuristic.
     [[nodiscard]] PermutationPath<T> compute_initial_heuristic_solution() const noexcept {
@@ -77,6 +78,11 @@ class TSPSolver : public Solver<PermutationPath<T>> {
         }
     }
 
+    // Try to improve the current generation via local search
+    void improve_generation(std::vector<T>& population_pool) noexcept {
+        local_search::improve_generation_complete(population_pool);
+    }
+
 protected:
     // Return true when the first solution is better than the second.
     [[nodiscard]] bool solution_comparator(const PermutationPath<T>& a,
@@ -87,10 +93,9 @@ protected:
     // Compute the initial population pool of size μ
     [[nodiscard]] std::vector<PermutationPath<T>>
     compute_initial_population_pool() noexcept override {
-        const size_t n = this->distance_matrix.size();
         PermutationPath<T> heuristic_solution(this->compute_initial_heuristic_solution());
 
-        return population::generate_initial(std::move(heuristic_solution), this->params.mu, n,
+        return population::generate_initial(std::move(heuristic_solution), this->params.mu, this->n,
                                             this->random_generator);
     }
 
@@ -144,7 +149,6 @@ public:
         super::population_pool = this->compute_initial_population_pool();
 
         super::best_solution = {super::compute_current_best_solution()};
-        this->n = super::best_solution.value().size();
 
         while (super::n_generations_without_improvement <
                    this->params.max_n_generations_without_improvement &&
