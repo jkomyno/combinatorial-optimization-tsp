@@ -64,7 +64,7 @@ namespace selection {
          */
 
         std::vector<double> probabilities_by_rank(mu);
-        for (size_t rank = 0; rank < mu; ++rank) {
+        for (int rank = 0; rank < mu; ++rank) {
             probabilities_by_rank[rank] = (1.0 - std::exp(-rank));
         }
 

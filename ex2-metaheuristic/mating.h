@@ -26,6 +26,9 @@ namespace mating {
             auto&& [offspring_1, offspring_2] = crossover::order(parent_1,
 				parent_2, n, random_generator);
 
+			utils::shift_to_value(offspring_1.begin(), offspring_1.end(), 0);
+			utils::shift_to_value(offspring_2.begin(), offspring_2.end(), 0);
+
             new_population_pool.emplace_back(std::move(offspring_1));
             new_population_pool.emplace_back(std::move(offspring_2));
         }
@@ -45,13 +48,16 @@ namespace mating {
         new_population_pool.reserve(lambda);
 
 		while (new_population_pool.size() < lambda) {
-			auto&& selected_parent_indexes = sampling::sample_pair<false>(n, random_generator);
+			auto&& selected_parent_indexes = sampling::sample_pair<false>(0, n, random_generator);
 
 			PermutationPath<T>& parent_1 = mating_pool[selected_parent_indexes.first];
 			PermutationPath<T>& parent_2 = mating_pool[selected_parent_indexes.second];
 
 			auto&& [offspring_1, offspring_2] = crossover::order(parent_1,
 				parent_2, n, random_generator);
+
+			utils::shift_to_value(offspring_1.begin(), offspring_1.end(), 0);
+			utils::shift_to_value(offspring_2.begin(), offspring_2.end(), 0);
 
             new_population_pool.emplace_back(std::move(offspring_1));
             new_population_pool.emplace_back(std::move(offspring_2));

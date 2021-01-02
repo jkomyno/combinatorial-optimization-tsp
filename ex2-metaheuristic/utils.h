@@ -159,13 +159,12 @@ namespace utils {
         return new_r;
     }
 
-    // Shift a vector without removing items such that the given value is placed in first position.
-    // We assume that all elements in the vector are different and that n exists in the given
-    // vector.
-    template <typename T>
-    void inline shift_to_value(std::vector<T>& vec, const T& value) noexcept {
-        auto n_it = std::find(vec.begin(), vec.end(), value);
-        std::rotate(vec.begin(), n_it, vec.end());
+    // Shift a range in a container such that the given value is placed in the first position. No
+    // items are removed in the process.
+    template <typename T, class ForwardIt>
+    void inline shift_to_value(ForwardIt first, ForwardIt last, const T& value) noexcept {
+        auto n_it = std::find(first, last, value);
+        std::rotate(first, n_it, last);
     }
 
     template <typename T>

@@ -181,7 +181,7 @@ namespace crossover {
     std::pair<PermutationPath<T>, PermutationPath<T>> order(PermutationPath<T>& parent_1,
                                                             PermutationPath<T>& parent_2, size_t n,
                                                             URBG&& random_generator) noexcept {
-        std::pair<size_t, size_t> cut_indexes(sampling::sample_pair<true>(n, random_generator));
+        std::pair<size_t, size_t> cut_indexes(sampling::sample_pair<true>(1, n, random_generator));
         return detail::order(parent_1, parent_2, cut_indexes);
     }
 
@@ -190,8 +190,10 @@ namespace crossover {
                                                                 PermutationPath<T>& parent_2,
                                                                 size_t n,
                                                                 URBG&& random_generator) noexcept {
-        std::pair<size_t, size_t> cut_indexes_1(sampling::sample_pair<true>(n, random_generator));
-        std::pair<size_t, size_t> cut_indexes_2(sampling::sample_pair<true>(n, random_generator));
+        std::pair<size_t, size_t> cut_indexes_1(
+            sampling::sample_pair<true>(1, n, random_generator));
+        std::pair<size_t, size_t> cut_indexes_2(
+            sampling::sample_pair<true>(1, n, random_generator));
 
         return detail::order_alt(parent_1, parent_2, cut_indexes_1, cut_indexes_2);
     }

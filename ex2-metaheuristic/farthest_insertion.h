@@ -52,7 +52,7 @@ namespace heuristic {
 		}
 
 		// Force the solution to start from the first city, 0
-		utils::shift_to_value<size_t>(circuit, 0);
+		utils::shift_to_value<size_t>(circuit.begin(), circuit.end(), 0);
 
 		return circuit;
 	}

@@ -21,6 +21,8 @@ namespace local_search {
     // The window constraints have been selected to cover almost the entire path when n is small,
     // and increasingly smaller subpaths when n grows. It's less effective than
     // ::improve_generation_complete but much faster.
+    // E.g.:
+    // - n: 14 => window deltas: [2, 8]
     template <typename T, class URBG>
     void improve_generation_greedy(std::vector<PermutationPath<T>>& population_pool,
                                    URBG&& random_generator) {
