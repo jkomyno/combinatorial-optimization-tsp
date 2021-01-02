@@ -79,8 +79,8 @@ class TSPSolver : public Solver<PermutationPath<T>> {
     }
 
     // Try to improve the current generation via local search
-    void improve_generation(std::vector<T>& population_pool) noexcept {
-        local_search::improve_generation_complete(population_pool);
+    void improve_generation(std::vector<PermutationPath<T>>& population_pool) noexcept {
+        local_search::improve_generation_greedy(population_pool, this->random_generator);
     }
 
 protected:
@@ -149,6 +149,16 @@ public:
         super::population_pool = this->compute_initial_population_pool();
 
         super::best_solution = {super::compute_current_best_solution()};
+
+        std::cout << "Generation #" << super::n_generations << std::endl;
+        std::cout << "  Best cost: " << super::best_solution.value().cost() << std::endl;
+
+        this->improve_generation(super::population_pool);
+        super::best_solution = {super::compute_current_best_solution()};
+
+        std::cout << "  Improved cost: " << super::best_solution.value().cost() << std::endl;
+
+        ++(super::n_generations);
 
         while (super::n_generations_without_improvement <
                    this->params.max_n_generations_without_improvement &&
