@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+#include <algorithm>      // std::find_if
 #include <random>         // std::mt19937, std::random_device
 #include <unordered_set>  // std::unordered_set
 #include <vector>         // std::vector
@@ -10,7 +11,10 @@
 #include "PermutationPath.h"
 #include "Solver.h"
 #include "farthest_insertion.h"
+#include "mating.h"
+#include "mutation.h"
 #include "population.h"
+#include "sampling.h"
 #include "selection.h"
 
 template <typename T>
@@ -26,10 +30,51 @@ class TSPSolver : public Solver<PermutationPath<T>> {
     // Random generator instance
     std::mt19937 random_generator;
 
+    // Size of the path, initialized at the beginning of ::solve()
+    mutable size_t n = 0;
+
     // Compute the initial solution according to a heuristic.
     [[nodiscard]] PermutationPath<T> compute_initial_heuristic_solution() const noexcept {
         std::vector<size_t> circuit(heuristic::farthest_insertion(this->distance_matrix));
         return PermutationPath<T>(std::move(circuit), this->distance_matrix);
+    }
+
+    void mutate_with_probability(std::vector<PermutationPath<T>>& pool) noexcept {
+        const double mutation_probability = this->params.mutation_probability;
+        const auto should_mutate = [=](double probability) -> bool {
+            return probability <= mutation_probability;
+        };
+
+        for (PermutationPath<T>& path : pool) {
+            auto first = path.cbegin();
+            auto last = path.cend();
+            auto it = first + 1;
+
+            // generate n - 1 random uniform probabilities in [0, 1)
+            auto probabilities(sampling::sample_probabilities(it, last, this->random_generator));
+
+            // select the indexes to mutate, i.e. the indexes where the probability is <= the
+            // given mutation probability
+            std::vector<size_t> indexes_to_mutate;
+
+            while ((it = std::find_if(it, last, should_mutate)) != last) {
+                indexes_to_mutate.push_back(std::distance(first, it));
+                ++it;
+            }
+
+            // if the selected indexes are odd, drop the last one
+            if (indexes_to_mutate.size() % 2) {
+                indexes_to_mutate.pop_back();
+            }
+
+            // apply the mutation for every sequential pair of selected indexes
+            for (size_t i = 0; i < indexes_to_mutate.size(); i += 2) {
+                size_t x = indexes_to_mutate[i];
+                size_t y = indexes_to_mutate[i + 1];
+
+                mutation::left_rotation(path, x, y);
+            }
+        }
     }
 
 protected:
@@ -57,15 +102,14 @@ protected:
     }
 
     // Compute the new generation of λ offsprings from a mating pool of size λ.
-    // TODO
     [[nodiscard]] std::vector<PermutationPath<T>> compute_current_offspring_pool(
         std::vector<PermutationPath<T>>& mating_pool) noexcept override {
-        return mating_pool;
+        return mating::sequential_crossover(mating_pool, this->n, this->random_generator);
     }
 
     // Perform a mutation of some of the given offsprings.
-    // TODO
     void mutate_offsprings(std::vector<PermutationPath<T>>& offspring_pool) noexcept override {
+        this->mutate_with_probability(offspring_pool);
     }
 
     // Select new generation's population pool.
@@ -100,6 +144,7 @@ public:
         super::population_pool = this->compute_initial_population_pool();
 
         super::best_solution = {super::compute_current_best_solution()};
+        this->n = super::best_solution.value().size();
 
         while (super::n_generations_without_improvement <
                    this->params.max_n_generations_without_improvement &&

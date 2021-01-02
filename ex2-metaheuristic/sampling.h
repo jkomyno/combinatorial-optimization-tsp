@@ -1,7 +1,10 @@
 #pragma once
 
-#include <random>         // std::uniform_int_distribution
+#include <algorithm>      // std::transform
+#include <iterator>       // std::back_inserter
+#include <random>         // std::uniform_int_distribution, std::uniform_real_distribution
 #include <unordered_set>  // std::unordered_set
+#include <vector>         // std::vector
 
 #include "utils.h"
 
@@ -73,5 +76,23 @@ namespace sampling {
     auto sample_from_range(RandomIt first, RandomIt last, size_t k, URBG&& random) {
         const auto id = [](const auto& x) { return x; };
         return sample_from_range<RandomIt, URBG>(first, last, k, random, id);
+    }
+
+    // Compute probabilities sampled from a uniform distribution
+    template <class RandomIt, class URBG>
+    std::vector<double> sample_probabilities(RandomIt first, RandomIt last, URBG&& g) {
+        size_t n = std::distance(first, last);
+
+        std::vector<double> probabilities;
+        probabilities.reserve(n);
+
+        using distr_t = std::uniform_real_distribution<double>;
+        using param_t = typename distr_t::param_type;
+        distr_t distribution;
+
+        std::transform(first, last, std::back_inserter(probabilities),
+                       [&](auto &&) -> double { return distribution(g, param_t(0, 1)); });
+
+        return probabilities;
     }
 }  // namespace sampling
