@@ -48,14 +48,14 @@ public:
     }
 
     // Copy constructor
-    explicit PermutationPath(const PermutationPath<T>& other) noexcept :
+    PermutationPath(const PermutationPath<T>& other) noexcept :
         path(other.path),
         distance_matrix(other.distance_matrix),
         distance(other.distance) {
     }
 
     // Move constructor
-    explicit PermutationPath(PermutationPath<T>&& other) noexcept :
+    PermutationPath(PermutationPath<T>&& other) noexcept :
         path(std::move(other.path)),
         distance_matrix(other.distance_matrix),
         distance(other.distance) {
