@@ -17,6 +17,7 @@
 #include "population.h"
 #include "sampling.h"
 #include "selection.h"
+#include "statistics.h"
 
 namespace solver {
     enum class SelectionType { TOURNAMENT_K_2, TOURNAMENT_K_8, EXPONENTIAL_RANKING };
@@ -24,8 +25,8 @@ namespace solver {
 }  // namespace solver
 
 template <typename T, bool include_heuristic = true,
-          solver::SelectionType selection_type = solver::SelectionType::EXPONENTIAL_RANKING,
-          solver::MutationType mutation_type = solver::MutationType::INVERSION>
+          solver::SelectionType selection_type = solver::SelectionType::TOURNAMENT_K_8,
+          solver::MutationType mutation_type = solver::MutationType::LEFT_ROTATION>
 class TSPSolver : public Solver<PermutationPath<T>> {
     using super = Solver<PermutationPath<T>>;
 
@@ -40,6 +41,9 @@ class TSPSolver : public Solver<PermutationPath<T>> {
 
     // Size of the path, initialized at the beginning of ::solve()
     const size_t n = this->distance_matrix.size();
+
+    // Crossover rate, probability that two parents are selected to generate an offspring
+    double crossover_rate = 1.0;
 
     // Compute the initial solution according to a heuristic.
     [[nodiscard]] PermutationPath<T> compute_initial_heuristic_solution() const noexcept {
@@ -121,19 +125,20 @@ protected:
 
     // Compute the mating pool of size λ of the current iteration.
     [[nodiscard]] std::vector<PermutationPath<T>> compute_current_mating_pool() noexcept override {
+        using namespace selection;
         using namespace solver;
 
         if constexpr (selection_type == SelectionType::EXPONENTIAL_RANKING) {
-            return selection::ranking(super::population_pool, this->params.lambda,
-                                      this->random_generator);
+            return parent::ranking(super::population_pool, this->params.lambda,
+                                   this->random_generator);
         } else if constexpr (selection_type == SelectionType::TOURNAMENT_K_2) {
             const size_t k = 2;
-            return selection::tournament(super::population_pool, this->params.lambda, k,
-                                         this->random_generator);
+            return parent::tournament(super::population_pool, this->params.lambda, k,
+                                      this->random_generator);
         } else if constexpr (selection_type == SelectionType::TOURNAMENT_K_8) {
             const size_t k = 8;
-            return selection::tournament(super::population_pool, this->params.lambda, k,
-                                         this->random_generator);
+            return parent::tournament(super::population_pool, this->params.lambda, k,
+                                      this->random_generator);
         }
     }
 
@@ -149,17 +154,14 @@ protected:
     }
 
     // Select new generation's population pool.
-    // TODO: implement elitism
-    [[nodiscard]] std::vector<PermutationPath<T>> select_new_generation(
-        std::vector<PermutationPath<T>>& mating_pool,
-        std::vector<PermutationPath<T>>& offspring_pool) noexcept override {
-        return offspring_pool;
-    }
+    // It implements a (μ, λ) selection.
+    void select_new_generation(std::vector<PermutationPath<T>>&& mating_pool,
+                               std::vector<PermutationPath<T>>&& offspring_pool) noexcept override {
 
-    // Run a single iteration.
-    void perform_iteration() noexcept {
-        super::perform_iteration();
-        this->improve_generation(super::population_pool);
+        using namespace selection;
+
+        children::generational_mu_lambda_selection(
+            super::population_pool, std::move(offspring_pool), this->random_generator);
     }
 
 public:
@@ -175,7 +177,7 @@ public:
     }
 
     // Run the solver
-    void solve() noexcept override {
+    void solve() override {
         std::cout << "Generation #" << super::n_generations << '\n';
 
         // generate half of the population with random permutations of the initial heuristic path,
@@ -198,14 +200,26 @@ public:
 
             std::cout << "Generation #" << super::n_generations << '\n';
 
+            std::cout << "  Average cost of generation: " << std::fixed
+                      << statistics::average_cost(super::population_pool) << '\n';
+
             this->perform_iteration();
-            std::cout << "  Best cost: " << super::best_solution.value().cost() << '\n';
+            std::cout << "  Best cost so far: " << super::best_solution.value().cost() << '\n';
+
+			if (super::n_generations % 10) {
+                this->improve_generation(super::population_pool);
+            }
 
             this->update_best_solution();
             std::cout << "  Improved cost: " << super::best_solution.value().cost() << '\n';
 
-            std::cout << "# generations without improvement: "
+            std::cout << "  # generations without improvement: "
                       << this->n_generations_without_improvement << std::endl;
         }
+
+        this->improve_generation(super::population_pool);
+
+        super::best_solution = {super::compute_current_best_solution()};
+        std::cout << "  Improved cost: " << super::best_solution.value().cost() << '\n';
     }
 };

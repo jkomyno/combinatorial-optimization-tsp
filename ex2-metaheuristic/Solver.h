@@ -39,8 +39,8 @@ protected:
     virtual void mutate_offsprings(std::vector<T>& offspring_pool) noexcept = 0;
 
     // Select new generation's population pool
-    [[nodiscard]] virtual std::vector<T> select_new_generation(
-        std::vector<T>& mating_pool, std::vector<T>& offspring_pool) noexcept = 0;
+    virtual void select_new_generation(std::vector<T>&& mating_pool,
+                                       std::vector<T>&& offspring_pool) noexcept = 0;
 
     // Run a single iteration
     virtual void perform_iteration() noexcept {
@@ -54,7 +54,7 @@ protected:
         this->mutate_offsprings(offspring_pool);
 
         // Select new generation's population pool
-        this->population_pool = this->select_new_generation(mating_pool, offspring_pool);
+        this->select_new_generation(std::move(mating_pool), std::move(offspring_pool));
 
         // Increment the number of generations
         this->n_generations++;
@@ -76,6 +76,9 @@ protected:
     void update_best_solution() noexcept {
         const T current_best_solution = this->compute_current_best_solution();
 
+        std::cout << "  Best solution of current generation: " << current_best_solution.cost()
+                  << '\n';
+
         if (!this->best_solution.has_value() ||
             this->solution_comparator(current_best_solution, this->best_solution.value())) {
 
@@ -94,7 +97,7 @@ public:
     }
 
     // Run the solver
-    virtual void solve() noexcept = 0;
+    virtual void solve() = 0;
 
     // Return the best solution
     [[nodiscard]] std::optional<T> get_best_solution() const noexcept {
