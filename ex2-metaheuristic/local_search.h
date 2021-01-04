@@ -7,12 +7,20 @@
 #include "neighborhood.h"
 
 namespace local_search {
+    template <typename T, class URBG>
+    void improve_generation_simple(std::vector<PermutationPath<T>>& population_pool,
+                                   URBG&& random_generator) noexcept {
+        for (auto& path : population_pool) {
+			neighborhood::variable_neighborhood_descent(path, random_generator, 10);
+        }
+	}
+
     // Apply variable neighborhood search to all the sequential pairs of indexes (i, j), i < j
     // of each path of the given population pool
     template <typename T>
     void improve_generation_complete(std::vector<PermutationPath<T>>& population_pool) {
         for (auto& path : population_pool) {
-            neighborhood::variable_neighborhood_search(path);
+            neighborhood::complete_variable_neighborhood_search(path);
         }
     }
 
