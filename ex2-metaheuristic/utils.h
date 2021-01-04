@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include <algorithm>      // std::generate_n, std::max_element, std::find, std::rotate
+#include <algorithm>      // std::generate_n, std::max_element, std::find, std::rotate, std::iota
 #include <iterator>       // std::next, std::inserter
 #include <limits>         // std::numeric_limits
 #include <list>           // std::list
@@ -95,6 +95,14 @@ namespace utils {
         return set;
     }
 
+    // Generate a vector with integer values in range [low, high)
+    [[nodiscard]] inline std::vector<size_t> vector_in_range(size_t low, size_t high) noexcept {
+        std::vector<size_t> vec(high - low);
+        std::iota(vec.begin(), vec.end(), low);
+
+        return vec;
+    }
+
     // Extract an elements from a node-based collection (std::vector, std::unordered_set, etc)
     template <typename T>
     [[nodiscard]] typename T::value_type pop(T& collection) {
@@ -175,5 +183,12 @@ namespace utils {
     template <typename T>
     inline auto to_pointer(T& x) noexcept {
         return &x;
+    }
+
+    // Equivalent of container::resize(amount) that doesn't need container::value_type to be
+    // default-constructible.
+    template <class Container>
+    void reduce_size(Container& c, std::size_t amount) {
+        c.erase(std::end(c) - amount, std::end(c));
     }
 }  // namespace utils
