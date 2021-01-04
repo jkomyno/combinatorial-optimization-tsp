@@ -23,7 +23,7 @@ namespace mating {
             PermutationPath<T>& parent_1 = mating_pool[i];
             PermutationPath<T>& parent_2 = mating_pool[i + 1];
 
-            auto&& [offspring_1, offspring_2] = crossover::order(parent_1,
+            auto&& [offspring_1, offspring_2] = crossover::order_alt(parent_1,
 				parent_2, n, random_generator);
 
 			utils::shift_to_value(offspring_1.begin(), offspring_1.end(), 0);
