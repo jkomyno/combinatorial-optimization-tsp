@@ -6,6 +6,8 @@
 #include <unordered_set>  // std::unordered_set
 #include <vector>         // std::vector
 
+#include <priority_queue/PriorityQueue.h>
+
 #include "utils.h"
 
 namespace sampling {
@@ -148,5 +150,41 @@ namespace sampling {
                        [&data](size_t index) { return data[index]; });
 
         return selection;
+    }
+
+    // Given a vector of probabilities of being removed, return the indexes of the k sampled items.
+    // See: http://www.sciencedirect.com/science/article/pii/S002001900500298X
+    template <class ForwardIt, class URBG>
+    std::vector<size_t> weighted_sample_indexes(ForwardIt first, ForwardIt last, size_t k,
+                                                URBG&& random_generator) {
+        const size_t n = std::distance(first, last);
+
+        std::vector<size_t> indexes(utils::vector_in_range(0, n));
+
+        std::vector<double> random_weights;
+        random_weights.reserve(n);
+
+        using distr_t = std::uniform_real_distribution<double>;
+        using param_t = typename distr_t::param_type;
+        distr_t distribution;
+
+        for (auto it = first; it != last; ++it) {
+            double r = distribution(random_generator, param_t(0, 1));
+            auto probability = *it;
+            double random_weight = std::log(r) / probability;
+            random_weights.push_back(random_weight);
+        }
+
+        auto min_pq(priority_queue::make_min_priority_queue(random_weights, indexes));
+
+        std::vector<size_t> sample_indexes;
+        sample_indexes.reserve(k);
+
+        for (size_t i = 0; i < k; ++i) {
+            sample_indexes.push_back(min_pq.top());
+            min_pq.pop();
+        }
+
+        return sample_indexes;
     }
 }  // namespace sampling
