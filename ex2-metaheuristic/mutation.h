@@ -7,6 +7,8 @@ namespace mutation {
     // Preconditions:
     // 1) 0 <= x <= N - 1
     // 2) 0 <= y <= N - 1
+    // Example:
+    // swap({0,1,2,3,4,5}, 1, 4) => {0,4,2,3,1,5}
     template <typename T>
     inline void swap(PermutationPath<T>& path, size_t x, size_t y) noexcept {
         using std::swap;
@@ -15,11 +17,12 @@ namespace mutation {
     }
 
     // Perform the left-rotation mutation on the given path.
-    // swap([0,1,2,3,4], 1, 3) => [0,2,3,1,4]
     // Preconditions:
     // 1) 0 <= x <= N - 1
     // 2) 0 <= y <= N - 1
     // 3) x < y
+    // Example:
+    // left_rotation({0,1,2,3,4,5}, 1, 4) => {0,2,3,4,1,5}
     template <typename T>
     inline void left_rotation(PermutationPath<T>& path, size_t x, size_t y) noexcept {
         size_t left = path[x];
@@ -29,11 +32,12 @@ namespace mutation {
     }
 
     // Perform the right-rotation mutation on the given path.
-    // swap([0,1,2,3,4], 1, 3) => [0,3,1,2,4]
     // Preconditions:
     // 1) 0 <= x <= N - 1
     // 2) 0 <= y <= N - 1
     // 3) x < y
+    // Example:
+    // right_rotation({0,1,2,3,4,5}, 1, 4) => {0,4,1,2,3,5}
     template <typename T>
     inline void right_rotation(PermutationPath<T>& path, size_t x, size_t y) noexcept {
         size_t right = path[y];
@@ -47,6 +51,8 @@ namespace mutation {
     // Preconditions:
     // 1) 0 <= x <= N - 1
     // 2) 0 <= y <= N - 1
+    // Example:
+    // inversion({0,1,2,3,4,5}, 1, 4) => {0,4,3,2,1,5}
     template <typename T>
     inline void inversion(PermutationPath<T>& path, size_t x, size_t y) noexcept {
         size_t i = x;
