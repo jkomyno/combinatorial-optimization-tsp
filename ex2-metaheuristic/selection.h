@@ -11,6 +11,29 @@
 
 namespace selection {
     namespace parent {
+        namespace detail {
+            // Compute exponential ranking probabilities
+            inline std::vector<double> exponential_ranking_probabilities(size_t mu) noexcept {
+                std::vector<double> probabilities_by_rank(mu);
+
+                // c is the normalization factor
+                double c = 0.0;
+
+                for (int rank = 0; rank < mu; ++rank) {
+                    double probability = (1.0 - std::exp(-rank));
+                    probabilities_by_rank[rank] = probability;
+                    c += probability;
+                }
+
+                // normalize probabilities
+                for (double& probability : probabilities_by_rank) {
+                    probability /= c;
+                }
+
+                return probabilities_by_rank;
+            }
+        }  // namespace detail
+
         // Tournament selection implementation. It selects λ members from a pool of individuals.
         template <typename T, class URBG>
         std::vector<PermutationPath<T>> tournament(std::vector<PermutationPath<T>>& population_pool,
@@ -64,20 +87,8 @@ namespace selection {
              * Compute exponential ranking probabilities
              */
 
-            std::vector<double> probabilities_by_rank(mu);
-
-            // c is the normalization factor
-            auto c = T(0);
-
-            for (int rank = 0; rank < mu; ++rank) {
-                double probability = (1.0 - std::exp(-rank));
-                probabilities_by_rank[rank] = probability;
-                c += probability;
-            }
-
-            for (double& probability : probabilities_by_rank) {
-                probability /= c;
-            }
+            std::vector<double> probabilities_by_rank(
+                detail::exponential_ranking_probabilities(mu));
 
             /**
              * Select from population pool according to the ranking probabilities,
@@ -132,21 +143,6 @@ namespace selection {
              * Place the selected offsprings at the beginning of offspring_pool,
              * reduce the offspring_pool size from λ to μ and move it to population_pool.
              */
-
-            /*
-            std::sort(selected_indexes.begin(), selected_indexes.end());
-
-            size_t i = 0;
-            for (size_t j : selected_indexes) {
-                // i <= j
-                using std::swap;
-                swap(offspring_pool[i], offspring_pool[j]);
-                ++i;
-            }
-
-            utils::reduce_size(offspring_pool, mu);
-            population_pool = std::move(offspring_pool);
-            */
 
             std::vector<PermutationPath<T>> sample_result;
             sample_result.reserve(mu);
