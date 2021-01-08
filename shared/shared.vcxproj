@@ -20,17 +20,18 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="shared\DistanceMatrix.h" />
-    <ClInclude Include="shared\EdgeWeightType.h" />
-    <ClInclude Include="shared\EuclideanPointReader.h" />
-    <ClInclude Include="shared\euclidean_distance.h" />
-    <ClInclude Include="shared\GeodesicPointReader.h" />
-    <ClInclude Include="shared\geodesic_distance.h" />
     <ClInclude Include="shared\Matrix.h" />
-    <ClInclude Include="shared\point.h" />
-    <ClInclude Include="shared\PointReader.h" />
-    <ClInclude Include="shared\point_reader_factory.h" />
     <ClInclude Include="shared\read_tsp_file.h" />
-    <ClInclude Include="shared\shared_utils.h" />
+    <ClInclude Include="shared\read_tsp_utils\EdgeWeightType.h" />
+    <ClInclude Include="shared\read_tsp_utils\EuclideanPointReader.h" />
+    <ClInclude Include="shared\read_tsp_utils\euclidean_distance.h" />
+    <ClInclude Include="shared\read_tsp_utils\GeodesicPointReader.h" />
+    <ClInclude Include="shared\read_tsp_utils\geodesic_distance.h" />
+    <ClInclude Include="shared\read_tsp_utils\point.h" />
+    <ClInclude Include="shared\read_tsp_utils\PointReader.h" />
+    <ClInclude Include="shared\read_tsp_utils\point_reader_factory.h" />
+    <ClInclude Include="shared\read_tsp_utils\utils.h" />
+    <ClInclude Include="shared\stopwatch.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

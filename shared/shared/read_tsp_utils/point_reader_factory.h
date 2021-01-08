@@ -5,7 +5,8 @@
 #pragma warning(disable : 4715)
 #endif
 
-#include <fstream>
+#include <fstream>  // std::fstream
+
 #include "EdgeWeightType.h"
 
 #include "EuclideanPointReader.h"

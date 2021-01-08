@@ -6,9 +6,9 @@
 #include <stdexcept>  // std::exception
 #include <string>     // std::string, std::string_literals
 
-#include "EdgeWeightType.h"
-#include "point_reader_factory.h"
-#include "shared_utils.h"
+#include "read_tsp_utils/EdgeWeightType.h"
+#include "read_tsp_utils/point_reader_factory.h"
+#include "read_tsp_utils/utils.h"
 
 // skip n_skip chars while reading from file
 inline void skip_chars(std::fstream& file,
