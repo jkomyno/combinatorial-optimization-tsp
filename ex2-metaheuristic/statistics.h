@@ -3,7 +3,7 @@
 #include <algorithm>
 #include <vector>
 
-#include "PermutationPath.h"
+#include <shared/path_utils/PermutationPath.h>
 
 namespace statistics {
     template <typename T>

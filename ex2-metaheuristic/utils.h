@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include <algorithm>      // std::generate_n, std::max_element, std::find, std::rotate, std::iota
+#include <algorithm>      // std::generate_n, std::max_element, std::find, std::rotate
 #include <iterator>       // std::next, std::inserter
 #include <limits>         // std::numeric_limits
 #include <list>           // std::list
@@ -9,25 +9,9 @@
 #include <unordered_set>  // std::unordered_set
 #include <vector>         // std::vector
 
+#include <shared/path_utils/utils.h>
+
 namespace utils {
-    // Compute the total distance of the circuit path [start, ..., end, start].
-    template <class ForwardIt, typename Distance>
-    auto sum_distances_as_circuit(const ForwardIt& start, const ForwardIt& end,
-                                  Distance&& get_distance) noexcept {
-        using distance_t = decltype(get_distance(0, 0));
-        auto circuit_distance = distance_t(0);
-        auto it_prev = start;
-
-        for (auto it_curr = std::next(start, 1); it_curr != end; ++it_curr) {
-            auto distance = get_distance(*it_curr, *it_prev);
-            circuit_distance += distance;
-            ++it_prev;
-        }
-
-        circuit_distance += get_distance(*start, *it_prev);
-        return circuit_distance;
-    }
-
     // Find the arc (i, j) that minimizes the value of w(i, r) - w(r, j) - w(i, j)
     // and add k in between i and j in circuit.
     template <typename Distance>
@@ -93,14 +77,6 @@ namespace utils {
                         [&set, low] { return set.size() + low; });
 
         return set;
-    }
-
-    // Generate a vector with integer values in range [low, high)
-    [[nodiscard]] inline std::vector<size_t> vector_in_range(size_t low, size_t high) noexcept {
-        std::vector<size_t> vec(high - low);
-        std::iota(vec.begin(), vec.end(), low);
-
-        return vec;
     }
 
     // Extract an elements from a node-based collection (std::vector, std::unordered_set, etc)

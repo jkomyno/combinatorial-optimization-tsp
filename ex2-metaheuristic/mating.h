@@ -3,7 +3,8 @@
 #include <random>  // std::uniform_real_distribution
 #include <vector>  // std::vector
 
-#include "PermutationPath.h"
+#include <shared/path_utils/PermutationPath.h>
+
 #include "crossover.h"
 #include "sampling.h"
 
@@ -63,7 +64,7 @@ namespace mating {
         distr_t distribution;
 
 		while (new_population_pool.size() < lambda) {
-			auto&& selected_parent_indexes = sampling::sample_pair<false>(0, n, random_generator);
+			auto&& selected_parent_indexes = sampling::sample_pair<false>(0, lambda, random_generator);
 
 			PermutationPath<T>& parent_1 = mating_pool[selected_parent_indexes.first];
 			PermutationPath<T>& parent_2 = mating_pool[selected_parent_indexes.second];

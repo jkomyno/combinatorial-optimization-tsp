@@ -6,7 +6,8 @@
 #include <utility>        // std::pair
 #include <vector>         // std::vector
 
-#include "PermutationPath.h"
+#include <shared/path_utils/PermutationPath.h>
+
 #include "sampling.h"
 
 namespace crossover {

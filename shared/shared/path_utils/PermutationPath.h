@@ -3,6 +3,7 @@
 #include <limits>  // std::numeric_limits
 #include <vector>  // std::vector
 
+#include "../DistanceMatrix.h"
 #include "utils.h"
 
 // PermutationPath represents a TSP path as a permutation of a vector [0, 1, ..., n-1], where n is
@@ -37,6 +38,12 @@ class PermutationPath {
     }
 
 public:
+    template <typename V>
+    static PermutationPath<V> from_size(size_t n,
+                                        const DistanceMatrix<V>& distance_matrix) noexcept {
+        return PermutationPath<V>(utils::vector_in_range(0, n), distance_matrix);
+    }
+
     explicit PermutationPath(const path_t& path, const DistanceMatrix<T>& distance_matrix) :
         path(path),
         distance_matrix(distance_matrix) {

@@ -21,6 +21,8 @@
   <ItemGroup>
     <ClInclude Include="shared\DistanceMatrix.h" />
     <ClInclude Include="shared\Matrix.h" />
+    <ClInclude Include="shared\path_utils\PermutationPath.h" />
+    <ClInclude Include="shared\path_utils\utils.h" />
     <ClInclude Include="shared\read_tsp_file.h" />
     <ClInclude Include="shared\read_tsp_utils\EdgeWeightType.h" />
     <ClInclude Include="shared\read_tsp_utils\EuclideanPointReader.h" />

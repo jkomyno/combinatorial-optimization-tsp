@@ -1,10 +1,10 @@
 #pragma once
 
-#include <priority_queue/BinaryHeap.h>
 #include <algorithm>
 #include <vector>
 
-#include "PermutationPath.h"
+#include <shared/path_utils/PermutationPath.h>
+
 #include "mutation.h"
 #include "sampling.h"
 
@@ -72,7 +72,7 @@ namespace neighborhood {
         }
     }  // namespace detail
 
-	template <typename T, class URBG>
+    template <typename T, class URBG>
     void variable_neighborhood_descent(PermutationPath<T>& path, URBG&& random_generator,
                                        size_t k_max = 3) noexcept {
         const size_t n = path.size();
@@ -121,16 +121,14 @@ namespace neighborhood {
                                                std::pair<size_t, size_t>&& window) noexcept {
         const size_t n = path.size();
         T best_cost = path.cost();
-		
+
         const auto [lb, ub] = window;
 
         for (size_t i = lb; i < ub - 1; ++i) {
             for (size_t j = i + 1; j < ub; ++j) {
                 const auto get_indexes = [=]() {
-					return [=]() -> std::pair<size_t, size_t> {
-						return {i, j};
-					};
-				};
+                    return [=]() -> std::pair<size_t, size_t> { return {i, j}; };
+                };
                 auto&& best_neighbor = detail::find_best_neighbor(path, get_indexes);
 
                 if (best_cost > best_neighbor.cost()) {

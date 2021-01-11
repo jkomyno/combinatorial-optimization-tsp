@@ -16,6 +16,9 @@
     <Filter Include="read_tsp_utils">
       <UniqueIdentifier>{7ed05905-a54b-453a-96ec-204e704dc918}</UniqueIdentifier>
     </Filter>
+    <Filter Include="path_utils">
+      <UniqueIdentifier>{c980076f-87b8-402e-90f6-71b2e0dde0af}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="shared\DistanceMatrix.h">
@@ -56,6 +59,12 @@
     </ClInclude>
     <ClInclude Include="shared\read_tsp_utils\utils.h">
       <Filter>read_tsp_utils</Filter>
+    </ClInclude>
+    <ClInclude Include="shared\path_utils\PermutationPath.h">
+      <Filter>path_utils</Filter>
+    </ClInclude>
+    <ClInclude Include="shared\path_utils\utils.h">
+      <Filter>path_utils</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

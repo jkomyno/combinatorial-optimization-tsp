@@ -4,9 +4,8 @@
 #include <cmath>      // std::exp
 #include <vector>     // std::vector
 
-#include <priority_queue/BinaryHeap.h>
+#include <shared/path_utils/PermutationPath.h>
 
-#include "PermutationPath.h"
 #include "sampling.h"
 
 namespace selection {

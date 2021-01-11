@@ -1,6 +1,6 @@
 #pragma once
 
-#include "PermutationPath.h"
+#include <shared/path_utils/PermutationPath.h>
 
 namespace mutation {
     // Perform the swap mutation on the given path.

@@ -3,7 +3,8 @@
 #include <cmath>   // std::log2
 #include <vector>  // std::vector
 
-#include "PermutationPath.h"
+#include <shared/path_utils/PermutationPath.h>
+
 #include "neighborhood.h"
 
 namespace local_search {
@@ -11,9 +12,9 @@ namespace local_search {
     void improve_generation_simple(std::vector<PermutationPath<T>>& population_pool,
                                    URBG&& random_generator) noexcept {
         for (auto& path : population_pool) {
-			neighborhood::variable_neighborhood_descent(path, random_generator, 10);
+            neighborhood::variable_neighborhood_descent(path, random_generator, 10);
         }
-	}
+    }
 
     // Apply variable neighborhood search to all the sequential pairs of indexes (i, j), i < j
     // of each path of the given population pool
