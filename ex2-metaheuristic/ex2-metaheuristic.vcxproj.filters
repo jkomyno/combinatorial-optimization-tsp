@@ -20,9 +20,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="PermutationPath.h">
-      <Filter>File di intestazione</Filter>
-    </ClInclude>
     <ClInclude Include="mutation.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
@@ -60,6 +57,12 @@
       <Filter>File di intestazione</Filter>
     </ClInclude>
     <ClInclude Include="local_search.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="statistics.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="decay.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
   </ItemGroup>

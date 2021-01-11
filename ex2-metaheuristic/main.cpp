@@ -3,10 +3,10 @@
 #include <string>    // std::stoi
 
 #include <shared/DistanceMatrix.h>
+#include <shared/path_utils/PermutationPath.h>
 #include <shared/read_tsp_file.h>
 
 #include "MetaHeuristicsParams.h"
-#include "PermutationPath.h"
 #include "TSPSolver.h"
 
 int main(int argc, char** argv) {
@@ -32,7 +32,10 @@ int main(int argc, char** argv) {
     // clang-format off
 	MetaHeuristicsParams params{
 		// mutation_probability
-		0.01,
+		0.1,
+
+		// crossover_rate
+		0.8,
 
 		// mu
 		25,
@@ -40,11 +43,17 @@ int main(int argc, char** argv) {
 		// lambda
 		50,
 
-		// tournament_k
-		8,
+		// max_n_generations_without_improvement
+		200,
 
-		// max_gens_without_improvement
-		30
+		// max_n_generations
+		500,
+
+		// tournament_k
+		12,
+
+		// restarts
+		1
 	};
     // clang-format on
 

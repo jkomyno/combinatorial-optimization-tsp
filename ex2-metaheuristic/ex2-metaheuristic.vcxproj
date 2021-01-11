@@ -142,16 +142,17 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="crossover.h" />
+    <ClInclude Include="decay.h" />
     <ClInclude Include="farthest_insertion.h" />
     <ClInclude Include="local_search.h" />
     <ClInclude Include="mating.h" />
     <ClInclude Include="MetaHeuristicsParams.h" />
     <ClInclude Include="mutation.h" />
     <ClInclude Include="neighborhood.h" />
-    <ClInclude Include="PermutationPath.h" />
     <ClInclude Include="population.h" />
     <ClInclude Include="sampling.h" />
     <ClInclude Include="selection.h" />
+    <ClInclude Include="statistics.h" />
     <ClInclude Include="TSPSolver.h" />
     <ClInclude Include="Solver.h" />
     <ClInclude Include="utils.h" />

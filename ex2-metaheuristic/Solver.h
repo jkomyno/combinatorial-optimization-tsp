@@ -42,45 +42,31 @@ protected:
     virtual void select_new_generation(std::vector<T>&& mating_pool,
                                        std::vector<T>&& offspring_pool) noexcept = 0;
 
+    // If true, create a new generation iteration
+    [[nodiscard]] virtual bool should_continue() noexcept = 0;
+
     // Run a single iteration
     virtual void perform_iteration() noexcept {
-        // Select λ members of a pool of μ individuals to create a mating pool.
-        std::vector<T> mating_pool(this->compute_current_mating_pool());
-
-        // Create the a new generation of λ offsprings from a mating pool of size λ.
-        std::vector<T> offspring_pool(this->compute_current_offspring_pool(mating_pool));
-
-        // Perform a mutation of some offsprings
-        this->mutate_offsprings(offspring_pool);
-
-        // Select new generation's population pool
-        this->select_new_generation(std::move(mating_pool), std::move(offspring_pool));
-
         // Increment the number of generations
         this->n_generations++;
     }
 
-    // Compute the best solution of the current generation and returns a copy of it.
-    // The population pool must contain at least one element.
-    [[nodiscard]] T compute_current_best_solution() const noexcept {
+    // Compute the best solution of the given pool and returns a copy of it.
+    // The pool must contain at least one element.
+    [[nodiscard]] T compute_best_solution(std::vector<T>& pool) const noexcept {
         auto comparator = [this](const auto& a, const auto& b) -> bool {
             return this->solution_comparator(a, b);
         };
 
-        auto best_it = std::min_element(this->population_pool.cbegin(),
-                                        this->population_pool.cend(), comparator);
+        auto best_it = std::min_element(pool.cbegin(), pool.cend(), comparator);
 
         return T(*best_it);
     }
 
     void update_best_solution() noexcept {
-        const T current_best_solution = this->compute_current_best_solution();
+        const T current_best_solution = this->compute_best_solution(this->population_pool);
 
-        std::cout << "  Best solution of current generation: " << current_best_solution.cost()
-                  << '\n';
-
-        if (!this->best_solution.has_value() ||
-            this->solution_comparator(current_best_solution, this->best_solution.value())) {
+        if (this->solution_comparator(current_best_solution, this->best_solution.value())) {
 
             this->best_solution = {std::move(current_best_solution)};
             this->n_generations_without_improvement = 0;
