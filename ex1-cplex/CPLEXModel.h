@@ -3,9 +3,10 @@
 #include <algorithm>  // std::fill_n
 #include <chrono>     // std::chrono::milliseconds
 #include <optional>   // std::optional
-#include <utility>    // std::pair
-#include <vector>     // std::vector
 #include <sstream>    // std::stringstream
+#include <thread>     // std::thread::hardware_concurrency
+#include <vector>     // std::vector
+#include <utility>    // std::pair
 
 #include <shared/Matrix.h>
 #include <shared/DistanceMatrix.h>
@@ -45,11 +46,15 @@ class CPLEXModel {
     void add_column(char variable, char type, double lower_bound, double upper_bound,
                     std::pair<size_t, size_t> ij, T objective_coefficient = 0) noexcept;
 
+	// Tell CPLEX to use the parallel opportunistic mode
+	void setup_parallelism() noexcept;
+
     // Set the maximum allotted time for computation to the CPLEX environment
     void force_time_limit(const std::chrono::milliseconds& timeout_ms) noexcept;
 
 public:
-    CPLEXModel(DistanceMatrix<T>& distance_matrix, const std::chrono::milliseconds& timeout_ms);
+    CPLEXModel(DistanceMatrix<T>& distance_matrix,
+		       const std::chrono::milliseconds& timeout_ms) noexcept;
 
 	// Release CPLEX resources
     ~CPLEXModel() noexcept;
@@ -63,7 +68,7 @@ public:
 
 template <typename T>
 inline CPLEXModel<T>::CPLEXModel(DistanceMatrix<T>& distance_matrix,
-                                 const std::chrono::milliseconds& timeout_ms) :
+                                 const std::chrono::milliseconds& timeout_ms) noexcept :
     distance_matrix(distance_matrix),
     N(static_cast<int>(distance_matrix.size())),
     n_variables((this->N - 1) * (2 * this->N - 1)) {
@@ -71,8 +76,9 @@ inline CPLEXModel<T>::CPLEXModel(DistanceMatrix<T>& distance_matrix,
         DECL_ENV(env);
         DECL_PROB(env, lp);
 
-        setup_lp();
+		setup_parallelism();
         force_time_limit(timeout_ms);
+        setup_lp();
 }
 
 // Release CPLEX resources
@@ -263,6 +269,13 @@ inline void CPLEXModel<T>::setup_lp() noexcept {
 	CHECKED_CPX_CALL(CPXwriteprob, env, lp, filename, nullptr);
 }
 
+template <typename T>
+inline void CPLEXModel<T>::setup_parallelism() noexcept {
+	auto n_threads = std::thread::hardware_concurrency();
+	CHECKED_CPX_CALL(CPXsetintparam, env, CPXPARAM_Threads, n_threads);
+	CHECKED_CPX_CALL(CPXsetintparam, env, CPXPARAM_Parallel, CPX_PARALLEL_OPPORTUNISTIC);
+}
+
 // Set the maximum allotted time for computation to the CPLEX environment
 template<typename T>
 inline void CPLEXModel<T>::force_time_limit(const std::chrono::milliseconds& timeout_ms) noexcept {
@@ -270,7 +283,7 @@ inline void CPLEXModel<T>::force_time_limit(const std::chrono::milliseconds& tim
 	double timeout_s = std::chrono::duration<double>(timeout_ms).count();
 
 	// See https://www.ibm.com/support/knowledgecenter/SSSA5P_12.7.1/ilog.odms.cplex.help/CPLEX/Parameters/topics/TiLim.html
-	CHECKED_CPX_CALL(CPXsetdblparam, env, 1039, timeout_s);
+	CHECKED_CPX_CALL(CPXsetdblparam, env, CPXPARAM_TimeLimit, timeout_s);
 }
 
 // Add a new column (variable) to the CPLEX environment.
@@ -291,8 +304,6 @@ inline void CPLEXModel<T>::add_column(char variable, char type, double lower_bou
 	name_stream << variable << '_' << i << '_' << j;
 	std::string variable_name = name_stream.str();
 	char* raw_variable_name = const_cast<char*>(variable_name.c_str());
-
-	std::cout << "raw_variable_name: " << raw_variable_name << '\n';
 	
 	const short n_variables_to_add = 1;
 
@@ -336,7 +347,7 @@ inline std::optional<T> CPLEXModel<T>::get_solution() const {
 		return {objective_value};
 	}
 	catch (std::exception & e) {
-		std::cout << e.what() << '\n';
+		// No solution exists. We return an empty optional
 		return {};
 	}
 }
