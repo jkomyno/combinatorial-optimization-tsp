@@ -258,10 +258,9 @@ public:
 
         auto&& current_best_solution = super::compute_best_solution(super::population_pool);
 
-        std::cout << "Best of generations: " << current_best_solution.cost() << '\n';
+        std::cout << '\n' << "Best of generations: " << current_best_solution.cost() << '\n';
         this->improve_generation(super::population_pool);
 
         this->update_best_solution();
-        std::cout << "Final cost: " << super::best_solution.value().cost() << '\n';
     }
 };
