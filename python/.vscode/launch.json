@@ -1,0 +1,33 @@
+{
+  "configurations": [
+    {
+      "name": "Benchmark",
+      "type": "python",
+      "request": "launch",
+      "module": "benchmark",
+      "args": [
+        "--program",
+        "../x64/Release/ex1-cplex.exe",
+        "--datasets",
+        "../tsp-datasets/test",
+        "--output",
+        "..",
+        "ex1-cplex"
+      ]
+    },
+    {
+      "name": "Calibrate",
+      "type": "python",
+      "request": "launch",
+      "module": "calibrate",
+      "args": [
+        "--program",
+        "../ex2-metaheuristic.exe",
+        "--datasets",
+        "../tsp-datasets/train",
+        "--output",
+        ".."
+      ]
+    }
+  ]
+}
