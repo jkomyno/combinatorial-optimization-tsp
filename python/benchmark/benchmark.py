@@ -9,7 +9,6 @@ from typing import Iterable
 import pandas as pd
 from . import ParameterGrid
 
-
 TIMEOUT_MS_LIST = [
   100,     # 0.1 seconds
   1000,    # 1 second
@@ -17,19 +16,21 @@ TIMEOUT_MS_LIST = [
   60000,   # 1 minute
 ]
 
+N_TRIALS = 11
+
 grid_params_ex1_cplex = {
   'timeout_ms': TIMEOUT_MS_LIST,
-  'trials': [11],
+  'trials': [N_TRIALS],
 }
 
 grid_params_ex2_metaheuristic = {
   'timeout_ms': TIMEOUT_MS_LIST,
-  'trials': [11],
+  'trials': [N_TRIALS],
 }
 
 grid_params_random_baseline = {
   'timeout_ms': TIMEOUT_MS_LIST,
-  'trials': [11],
+  'trials': [N_TRIALS],
 }
 
 grid_params = {
@@ -98,7 +99,7 @@ def parse_ex1_cplex_output(stdout: Iterable):
   line = next(stdout)
   line_split = line.split(': ')
 
-  if len(line_split) is 0:
+  if len(line_split) is 1:
     # no solution has been found
     parse_result['solution'] = None
   else:
@@ -110,18 +111,20 @@ def parse_ex1_cplex_output(stdout: Iterable):
 def parse_ex2_metaheuristic_output(stdout: Iterable):
   # pairs of (key, parser). Parser is a function that receives a string in input.
   line_to_key_parser = [
+    ('heuristic_cost', compose(int)(float)),
+    ('initial_best_cost', compose(int)(float)),
+    ('initial_improved_cost', compose(int)(float)),
+    ('best_of_generations', compose(int)(float)),
     ('N', int),
-    ('heuristic_cost', int),
-    ('initial_best_cost', int),
-    ('initial_improved_cost', int),
-    ('best_of_generations', int),
+    ('program_time_ms', int),
+    ('was_interrupted', lambda x: True if int(x) > 0 else False),
     ('solution', compose(int)(float)),
   ]
 
   parse_result = defaultdict(dict)
 
   for j, line in enumerate(stdout):
-    if j < 4:
+    if j < 3:
       value = line.split(': ')[1]
       key, value_parser = line_to_key_parser[j]
       parse_result[key] = value_parser(value)
@@ -134,7 +137,7 @@ def parse_ex2_metaheuristic_output(stdout: Iterable):
     if not line.lstrip().startswith('#'):
       break
   
-  for j, line in enumerate(stdout, start=4):
+  for j, line in enumerate(stdout, start=3):
     value = line.split(': ')[1]
     key, value_parser = line_to_key_parser[j]
     parse_result[key] = value_parser(value)
@@ -165,8 +168,14 @@ def benchmark_ex1_cplex(args, dataset: str, df: pd.DataFrame,
                         timeout_ms: int, trials: int):
   dataset_name = Path(dataset).stem
 
-  for i in range (1, trials + 1):
-    cmd = list(map(str, [args.program, timeout_ms, dataset]))
+  for _ in range (0, trials):
+    cmd = list(map(str, [
+      args.program,
+      '--timeout-ms',
+      timeout_ms,
+      '--filename',
+      dataset,
+    ]))
 
     # execute program and capture its output
     with subprocess.Popen(cmd, stdout=subprocess.PIPE, bufsize=1,
@@ -186,8 +195,14 @@ def benchmark_ex2_metaheuristic(args, dataset: str, df: pd.DataFrame,
                                 timeout_ms: int, trials: int):
   dataset_name = Path(dataset).stem
 
-  for i in range (1, trials + 1):
-    cmd = list(map(str, [args.program, timeout_ms, dataset]))
+  for _ in range (0, trials):
+    cmd = list(map(str, [
+      args.program,
+      '--timeout-ms',
+      timeout_ms,
+      '--filename',
+      dataset,
+    ]))
 
     # execute program and capture its output
     with subprocess.Popen(cmd, stdout=subprocess.PIPE, bufsize=1,
@@ -206,8 +221,14 @@ def benchmark_random_baseline(args, dataset: str, df: pd.DataFrame,
                               timeout_ms: int, trials: int):
   dataset_name = Path(dataset).stem
 
-  for i in range (1, trials + 1):
-    cmd = list(map(str, [args.program, timeout_ms, dataset]))
+  for _ in range (0, trials):
+    cmd = list(map(str, [
+      args.program,
+      '--timeout-ms',
+      timeout_ms,
+      '--filename',
+      dataset,
+    ]))
 
     # execute program and capture its output
     with subprocess.Popen(cmd, stdout=subprocess.PIPE, bufsize=1,
@@ -243,16 +264,15 @@ def benchmark(args):
   }
 
   for dataset in iglob(path.join(args.datasets, '*.tsp')):
-    print(f'dataset: {dataset}')
+    print(f'dataset: {dataset}', flush=True)
     for i, comb in enumerate(grid):
       print(f'**comb: {comb}')
-      print(f'Iteration #{i+1} started...\n')
+      print(f'Iteration #{i+1} started...\n', flush=True)
 
       df = create_df_map[args.program_type](args, dataset, df, **comb)
 
-      print(f'Iteration #{i+1} completed!\n\n')
+      print(f'Iteration #{i+1} completed!\n\n', flush=True)
 
-    # break
 
   df.to_csv(path.join(args.output, f'{args.program_type}.csv'), sep=',', index=False,
             encoding='utf-8', decimal='.')

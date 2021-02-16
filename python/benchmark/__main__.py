@@ -1,6 +1,7 @@
 import argparse
 from . import benchmark
 
+
 if __name__ == '__main__':
   parser = argparse.ArgumentParser()
   required = parser.add_argument_group('required arguments')
