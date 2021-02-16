@@ -1,0 +1,3 @@
+[submodule "third-party/argparse"]
+	path = third-party/argparse
+	url = https://github.com/morrisfranken/argparse
