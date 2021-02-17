@@ -83,7 +83,7 @@ public:
     }
 
     // Run the solver
-    virtual void solve() = 0;
+    virtual void solve() noexcept = 0;
 
     // Return the best solution
     [[nodiscard]] std::optional<T> get_best_solution() const noexcept {
