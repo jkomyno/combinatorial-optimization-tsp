@@ -44,5 +44,10 @@ int main(int argc, char** argv) {
     PermutationPath<double> solution_path(random_solver.get_solution());
 
     std::cout << "solution_cost: " << std::fixed << solution_path.cost();
+
+    if (args.show_path) {
+        std::cout << "Solution path:\n" << solution_path << '\n';
+    }
+
     std::cout << std::flush;
 }
