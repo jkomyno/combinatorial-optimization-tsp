@@ -10,6 +10,7 @@
 
 #include "MetaHeuristicsParams.h"
 #include "Solver.h"
+#include "SolverTablePrinter.h"
 #include "decay.h"
 #include "farthest_insertion.h"
 #include "local_search.h"
@@ -46,6 +47,9 @@ class TSPSolver : public Solver<PermutationPath<T>> {
     // Heuristic solution
     PermutationPath<T> heuristic_solution =
         TSPSolver::compute_initial_heuristic_solution<T>(this->distance_matrix);
+
+     // When stop is set to true, the solver should stop
+    volatile bool stop_cond = false;
 
     // Compute the initial solution according to a heuristic.
     template <typename V>
@@ -107,6 +111,11 @@ class TSPSolver : public Solver<PermutationPath<T>> {
                 }
             }
         }
+    }
+
+    // Try to improve the initial generation via local search
+    void improve_initial_generation(std::vector<PermutationPath<T>>& population_pool) noexcept {
+        local_search::improve_generation_simple(population_pool, this->random_generator);
     }
 
     // Try to improve the current generation via local search
@@ -177,12 +186,19 @@ protected:
         }
     }
 
+    // Return true if and only if the genetic algorithm should continue, i.e. if the number of
+    // generations without improvement and the number of generations haven't reached the max
     bool should_continue() noexcept override {
+        if (this->stop_cond) {
+            return false;
+        }
+
         return super::n_generations_without_improvement <
                    this->params.max_n_generations_without_improvement &&
                super::n_generations < this->params.max_n_generations;
     }
 
+    // Perform a single iteration of the genetic algorithm
     void perform_iteration() noexcept override {
         // Select λ members of a pool of μ individuals to create a mating pool.
         std::vector<PermutationPath<T>> mating_pool(this->compute_current_mating_pool());
@@ -200,6 +216,23 @@ protected:
         super::perform_iteration();
     }
 
+    void init() noexcept {
+        // Generate half of the population with random permutations of the initial heuristic path,
+        // and the remaining half random permutations of the sorted path of cities [0,1,...,n-1]
+        super::population_pool = this->compute_initial_population_pool();
+
+        // Compute the best solution
+        super::best_solution = {super::compute_best_solution(super::population_pool)};
+
+        std::cout << "Heuristic cost: " << this->heuristic_solution.cost() << '\n';
+        std::cout << "Best cost: " << super::best_solution.value().cost() << '\n';
+
+        this->improve_initial_generation(super::population_pool);
+        super::best_solution = {super::compute_best_solution(super::population_pool)};
+
+        std::cout << "Improved cost: " << super::best_solution.value().cost() << '\n';
+    }
+
 public:
     explicit TSPSolver(const DistanceMatrix<T>& distance_matrix,
                        const MetaHeuristicsParams& params) noexcept :
@@ -212,29 +245,21 @@ public:
     ~TSPSolver() {
     }
 
+    void stop() noexcept {
+        this->stop_cond = true;
+    }
+
+    bool is_stopped() const noexcept {
+        return this->stop_cond;
+    }
+
     // Run the solver
-    void solve() override {
-        // generate half of the population with random permutations of the initial heuristic path,
-        // and the remaining half random permutations of the sorted path of cities [0,1,...,n-1]
-        super::population_pool = this->compute_initial_population_pool();
-
-        // compute the best solution
-        super::best_solution = {super::compute_best_solution(super::population_pool)};
-
-        std::cout << "Heuristic cost: " << this->heuristic_solution.cost() << '\n';
-        std::cout << "Best cost: " << super::best_solution.value().cost() << '\n';
-
-        this->improve_generation(super::population_pool);
-        super::best_solution = {super::compute_best_solution(super::population_pool)};
-
-        std::cout << "Improved cost: " << super::best_solution.value().cost() << '\n';
+    void solve() noexcept override {
+        // initialize first solutions
+        this->init();
 
         // verbose output
-        std::cout << "Gen #i  | best_(i-1)    | best_i        | avg_cost      | "
-                     "generations_without_improvement"
-                  << '\n';
-
-        constexpr auto SEP = "\t|\t";
+        solver::table::header(std::cout);
 
         while (this->should_continue()) {
             const double avg_cost = statistics::average_cost(super::population_pool);
@@ -242,7 +267,7 @@ public:
 
             this->perform_iteration();
 
-            if (super::n_generations_without_improvement % 10) {
+            if (super::n_generations_without_improvement % 20) {
                 this->improve_generation(super::population_pool);
             }
 
@@ -250,10 +275,9 @@ public:
 
             const double current_best_cost = super::best_solution.value().cost();
 
-            std::cout << '#' << super::n_generations << SEP << previous_best_cost << SEP
-                      << current_best_cost << SEP << avg_cost << SEP
-                      << super::n_generations_without_improvement << '\n'
-                      << std::flush;
+            solver::table::row(std::cout, super::n_generations, previous_best_cost,
+                               current_best_cost, avg_cost,
+                               super::n_generations_without_improvement);
         }
 
         auto&& current_best_solution = super::compute_best_solution(super::population_pool);
