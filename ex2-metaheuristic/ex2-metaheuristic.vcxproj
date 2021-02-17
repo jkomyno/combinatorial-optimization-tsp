@@ -141,6 +141,7 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="cli.h" />
     <ClInclude Include="crossover.h" />
     <ClInclude Include="decay.h" />
     <ClInclude Include="farthest_insertion.h" />
@@ -152,6 +153,7 @@
     <ClInclude Include="population.h" />
     <ClInclude Include="sampling.h" />
     <ClInclude Include="selection.h" />
+    <ClInclude Include="SolverTablePrinter.h" />
     <ClInclude Include="statistics.h" />
     <ClInclude Include="TSPSolver.h" />
     <ClInclude Include="Solver.h" />

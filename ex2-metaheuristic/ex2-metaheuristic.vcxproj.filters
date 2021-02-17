@@ -65,5 +65,11 @@
     <ClInclude Include="decay.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
+    <ClInclude Include="cli.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="SolverTablePrinter.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

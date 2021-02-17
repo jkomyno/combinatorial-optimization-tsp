@@ -23,5 +23,8 @@
     <ClInclude Include="RandomSolver.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
+    <ClInclude Include="cli.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
