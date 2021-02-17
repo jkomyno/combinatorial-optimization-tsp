@@ -1,5 +1,7 @@
 CXX=g++
-CXXFLAGS=-O3 -Wall -Wextra -std=c++17 -Wno-return-type -I shared -I third-party
+CXXFLAGS=-O3 -Wall -Wextra -std=c++17 \
+	 -Wno-unused-result -Wno-sign-compare -Wno-return-type \
+	 -I shared -I third-party
 MAINFILE=main.cpp
 
 CPLEX_INCLUDE=/opt/ibm/ILOG/CPLEX_Studio128/cplex/include
@@ -20,7 +22,7 @@ ${EX1}:
 	${CXX} ${CXXFLAGS} -I ${CPLEX_INCLUDE} -L ${CPLEX_LIBRARY} -lm -pthread -lcplex  "${EX1}/${MAINFILE}" -o "${OUT_DIR}/${EX1}${EXT}"
 
 ${EX2}:
-	${CXX} ${CXXFLAGS} "${EX2}/${MAINFILE}" -o "${OUT_DIR}/${EX2}${EXT}"
+	${CXX} ${CXXFLAGS} -pthread "${EX2}/${MAINFILE}" -o "${OUT_DIR}/${EX2}${EXT}"
 
 
 ${RANDOM}:

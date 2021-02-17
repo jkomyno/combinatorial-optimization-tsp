@@ -35,8 +35,6 @@ int main(int argc, char** argv) {
     const auto program_time_ms =
         stopwatch::duration<stopwatch::ms_t>(program_time_start, program_time_stop);
 
-    const bool was_interrupted = program_time_ms - timeout_ms.count() > 0;
-
     std::cout << "N: " << N << '\n';
     std::cout << "program_time_ms: " << program_time_ms << '\n';
     std::cout << "was_interrupted: " << true << '\n';

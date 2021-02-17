@@ -16,8 +16,6 @@ namespace neighborhood {
         template <typename T, class GetIndexes>
         PermutationPath<T> find_best_neighbor(const PermutationPath<T>& path,
                                               GetIndexes&& get_indexes) noexcept {
-            const size_t n = path.size();
-
             // Boolean comparator used for the PermutationPath<T>* objects.
             const auto comparator = [](auto path_a, auto path_b) -> bool {
                 return path_a->cost() > path_b->cost();
@@ -76,12 +74,14 @@ namespace neighborhood {
     void variable_neighborhood_descent(PermutationPath<T>& path, URBG&& random_generator,
                                        size_t k_max = 3) noexcept {
         const size_t n = path.size();
-
+	
+        /*        
         const auto get_indexes_dynamic = [&random_generator, n]() {
             return [&random_generator, n]() -> std::pair<size_t, size_t> {
                 return sampling::sample_pair<true>(1, n - 1, random_generator);
             };
         };
+	*/
 
         const auto get_indexes_static = [&random_generator, n]() {
             const auto ij = sampling::sample_pair<true>(1, n - 1, random_generator);
@@ -119,7 +119,6 @@ namespace neighborhood {
     template <typename T>
     void windowed_variable_neighborhood_search(PermutationPath<T>& path,
                                                std::pair<size_t, size_t>&& window) noexcept {
-        const size_t n = path.size();
         T best_cost = path.cost();
 
         const auto [lb, ub] = window;

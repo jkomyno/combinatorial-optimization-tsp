@@ -53,7 +53,7 @@ class TSPSolver : public Solver<PermutationPath<T>> {
 
     // Compute the initial solution according to a heuristic.
     template <typename V>
-    static [[nodiscard]] PermutationPath<V> compute_initial_heuristic_solution(
+    static PermutationPath<V> compute_initial_heuristic_solution(
         const DistanceMatrix<T>& distance_matrix) noexcept {
         std::vector<size_t> circuit(heuristic::farthest_insertion(distance_matrix));
         PermutationPath<V> heuristic_path(std::move(circuit), distance_matrix);
@@ -133,8 +133,7 @@ protected:
     // Compute the initial population pool of size μ
     [[nodiscard]] std::vector<PermutationPath<T>>
     compute_initial_population_pool() noexcept override {
-        return population::generate_initial(this->heuristic_solution, this->params.mu, this->n,
-                                            this->random_generator);
+        return population::generate_initial(this->heuristic_solution, this->params.mu, this->random_generator);
     }
 
     // Compute the mating pool of size λ of the current iteration.

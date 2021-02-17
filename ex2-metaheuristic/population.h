@@ -32,8 +32,7 @@ namespace population {
     // The population is composed of random permutations of a given heuristic path.
     template <typename T, class URBG>
     std::vector<PermutationPath<T>> generate_initial(const PermutationPath<T>& heuristic_path,
-                                                     size_t mu, size_t n,
-                                                     URBG&& random_generator) noexcept {
+                                                     size_t mu, URBG&& random_generator) noexcept {
         std::vector<PermutationPath<T>> population_pool;
         population_pool.reserve(mu);
         population_pool.emplace_back(heuristic_path);
