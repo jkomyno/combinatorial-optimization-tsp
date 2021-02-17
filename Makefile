@@ -11,25 +11,32 @@ EX1=ex1-cplex
 EX2=ex2-metaheuristic
 RANDOM=random-baseline
 
-OUT_DIR="."
-EXT=".exe"
+OBJ_EX1=main.o
 
-all: algs
+OUT_DIR="./build"
+EXT=".out"
+
+all: dir algs
 
 algs: ${EX1} ${EX2} ${RANDOM}
 
-${EX1}:
-	${CXX} ${CXXFLAGS} -I ${CPLEX_INCLUDE} -L ${CPLEX_LIBRARY} -lm -pthread -lcplex  "${EX1}/${MAINFILE}" -o "${OUT_DIR}/${EX1}${EXT}"
+dir:
+	mkdir -p ${OUT_DIR}
 
-${EX2}:
+
+${EX1}: dir
+	${CXX} ${CXXFLAGS} -I ${CPLEX_INCLUDE} -c ./${EX1}/main.cpp -o ${OUT_DIR}/${OBJ_EX1}
+	${CXX} ${CXXFLAGS} $(addprefix ${OUT_DIR}/,$(OBJ_EX1)) -o "${OUT_DIR}/${EX1}${EXT}" -L ${CPLEX_LIBRARY} -lcplex -lm -pthread -ldl
+	rm -rf ${OUT_DIR}/${OBJ_EX1}
+
+${EX2}: dir
 	${CXX} ${CXXFLAGS} -pthread "${EX2}/${MAINFILE}" -o "${OUT_DIR}/${EX2}${EXT}"
 
 
-${RANDOM}:
+${RANDOM}: dir
 	${CXX} ${CXXFLAGS} -pthread "${RANDOM}/${MAINFILE}" -o "${OUT_DIR}/${RANDOM}${EXT}"
 
-.PHONY: all algs clear
-.PHONY: ${EX1} ${EX2} ${RANDOM}
+clean:
+	rm -rf ${OUT_DIR}
 
-clear:
-	rm "${OUT_DIR}/${EX1}${EXT}" "${OUT_DIR}/${EX2}${EXT}" "${OUT_DIR}/${RANDOM}${EXT}" 
+.PHONY: all clean
