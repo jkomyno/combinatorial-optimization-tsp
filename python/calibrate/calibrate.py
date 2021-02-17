@@ -11,7 +11,7 @@ def calibrate(args):
 
   with ThreadPool(cpu_count()) as pool:
     print('Executing first step...')
-    calibrate_variables(args, pool=pool)
+    hyperparameters = calibrate_variables(args, pool=pool)
 
     print('Executing second step...')
-    calibrate_final_tuning(args, pool=pool)
+    calibrate_final_tuning(args, pool=pool, hyperparameters)

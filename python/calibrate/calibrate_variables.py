@@ -1,3 +1,4 @@
+from python.calibrate.HyperParameters import HyperParameters
 from . import utils
 import math
 import itertools
@@ -153,7 +154,7 @@ def run_ex2_metaheuristic(args, x):
   return average, stddev
 
 
-def calibrate_variables(args, pool):
+def calibrate_variables(args, pool) -> HyperParameters:
   sampling = MixedVariableSampling(mask, {
     # Real numbers are sampled via Latin Hypercube Sampling
     'real': get_sampling('real_lhs'),
@@ -193,32 +194,38 @@ def calibrate_variables(args, pool):
   best_solution = res.X[0]
   min_average = res.F[0][0]
   min_stddev = res.F[0][1]
-  
-  save_csv(args, best_solution, min_average, min_stddev)
 
-
-def save_csv(args, best_solution, min_average, min_stddev):
   mutation_probability = get_var(best_solution, 'mutation_probability')
   crossover_rate = get_var(best_solution, 'crossover_rate')
   mu = get_var(best_solution, 'mu')
   lambda_ = get_var(best_solution, 'lambda')
   k = get_var(best_solution, 'k')
 
-  print(f'mutation_probability: {mutation_probability}')
-  print(f'crossover_rate: {crossover_rate}')
-  print(f'mu: {mu}')
-  print(f'lambda: {lambda_}')
-  print(f'k: {k}')
+  hyperparameters = HyperParameters(
+    mutation_probability=mutation_probability,
+    crossover_rate=crossover_rate,
+    mu=mu,
+    lambda_=lambda_,
+    k=k
+  )
+  
+  save_csv(args, best_solution, min_average, min_stddev)
 
+  return hyperparameters
+
+
+def save_csv(args, hyperparameters: HyperParameters, min_average: float, min_stddev: float):
   print(f'min_average: {min_average}')
   print(f'min_stddev: {min_stddev}')
 
+  print(hyperparameters)
+
   df = pd.DataFrame.from_records([{
-    'mutation_probability': mutation_probability,
-    'crossover_rate': crossover_rate,
-    'mu': mu,
-    'lambda': lambda_,
-    'k': k,
+    'mutation_probability': hyperparameters.mutation_probability,
+    'crossover_rate': hyperparameters.crossover_rate,
+    'mu': hyperparameters.mu,
+    'lambda': hyperparameters.lambda_,
+    'k': hyperparameters.k,
     'min_average': min_average,
     'min_stddev': min_stddev,
   }])

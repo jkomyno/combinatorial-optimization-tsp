@@ -1,3 +1,4 @@
+from python.calibrate.HyperParameters import HyperParameters
 from . import utils
 import math
 import itertools
@@ -46,7 +47,7 @@ lower_bounds, upper_bounds = utils.lower_upper_bounds(bounds)
 
 
 class MetaProblem(Problem):
-  def __init__(self, args, **kwargs):
+  def __init__(self, args, hyperparameters: HyperParameters, **kwargs):
     super().__init__(n_var=len(mask),
                      n_obj=2,
                      n_constr=2,
@@ -55,6 +56,7 @@ class MetaProblem(Problem):
                      elementwise_evaluation=True,
                      **kwargs)
     self.args = args
+    self.hyperparameters = hyperparameters
     
   def _evaluate(self, x, out, *args, **kwargs):
     ##########################
@@ -62,7 +64,7 @@ class MetaProblem(Problem):
     ##########################
 
     # we want to minimize our average solutions and the probability of spikes in those solutions
-    average, stddev = run_ex2_metaheuristic(self.args, x)
+    average, stddev = run_ex2_metaheuristic(self.args, x, self.hyperparameters)
 
     ###############
     # constraints #
@@ -85,12 +87,18 @@ class MetaProblem(Problem):
     out['G'] = [max_gen_no_improvementt_lt_max_gen]
 
 
-def get_ex2_metaheuristic_result(args, dataset: str, max_gen_no_improvement: int, max_gen: int):
+def get_ex2_metaheuristic_result(args, dataset: str, hyperparameters: HyperParameters,
+                                 max_gen_no_improvement: int, max_gen: int):
   timeout_ms = TIMEOUT_MS
   cmd = list(map(str, [
     args.program,
     '--timeout-ms', timeout_ms,
     '--filename', dataset,
+    '--mutation-probability', hyperparameters.mutation_probability,
+    '--crossover-rate', hyperparameters.crossover_rate,
+    '--mu', hyperparameters.mu,
+    '--lambda', hyperparameters.lambda_,
+    '-k', hyperparameters.k,
     '--max-gen-no-improvement', max_gen_no_improvement,
     '--max-gen', max_gen,
   ]))
@@ -111,7 +119,7 @@ def get_ex2_metaheuristic_result(args, dataset: str, max_gen_no_improvement: int
   return solution
 
 
-def run_ex2_metaheuristic(args, x):
+def run_ex2_metaheuristic(args, x, hyperparameters: HyperParameters):
   max_gen_no_improvement = get_var(x, 'max_gen_no_improvement')
   max_gen = get_var(x, 'max_gen')
 
@@ -119,7 +127,7 @@ def run_ex2_metaheuristic(args, x):
     return math.inf, math.inf
   
   solutions = [
-    get_ex2_metaheuristic_result(args, dataset, max_gen_no_improvement, max_gen)
+    get_ex2_metaheuristic_result(args, dataset, hyperparameters, max_gen_no_improvement, max_gen)
     for dataset in iglob(path.join(args.datasets, '*.tsp'))
   ]
 
@@ -129,7 +137,7 @@ def run_ex2_metaheuristic(args, x):
   return average, stddev
 
 
-def calibrate_final_tuning(args, pool):
+def calibrate_final_tuning(args, pool, hyperparameters: HyperParameters):
   sampling = MixedVariableSampling(mask, {
     # Integer numbers are sampled via Uniform Random Sampling
     'int': get_sampling('int_random')
@@ -144,7 +152,7 @@ def calibrate_final_tuning(args, pool):
     'int': get_mutation('int_pm', eta=3.0)
   })
   
-  problem = MetaProblem(args, parallelization=None)
+  problem = MetaProblem(args, hyperparameters=hyperparameters, parallelization=None)
   algorithm = NSGA2(
     pop_size=EXECUTIONS_FOR_ITERATION,
     sampling=sampling,
