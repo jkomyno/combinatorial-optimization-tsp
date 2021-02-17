@@ -46,8 +46,7 @@ namespace point_reader {
          * Shared implementation of PointReader's read() method.
          * This can't be directly embed it in PointReader because can't know a priori the the type
          * associated with the vector point_vec. PointReader can't be generic either, because
-         * otherwise we wouldn't know how to instantiate it (it would have two different generic
-         * types for GEO and EUC_2D points).
+         * otherwise we wouldn't know how to instantiate it.
          */
         template <class Point>
         void read_point(std::fstream& file, size_t dimension, std::vector<Point>& point_vec) {

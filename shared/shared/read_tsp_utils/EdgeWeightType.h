@@ -6,8 +6,7 @@
 
 // enumeration of the supported metric distances
 enum class EdgeWeightType {
-    EUC_2D,  // euclidean 2-dimensional distance
-    GEO      // geodesic distance
+    EUC_2D  // euclidean 2-dimensional distance
 };
 
 // read a EdgeWeightType object in input
@@ -17,8 +16,6 @@ std::istream& operator>>(std::istream& is, EdgeWeightType& edge_weight_type) {
 
     if (name == "EUC_2D") {
         edge_weight_type = EdgeWeightType::EUC_2D;
-    } else if (name == "GEO") {
-        edge_weight_type = EdgeWeightType::GEO;
     } else {
         using namespace std::string_literals;
         throw std::runtime_error("Unsupported EDGE_WEIGHT_TYPE"s);

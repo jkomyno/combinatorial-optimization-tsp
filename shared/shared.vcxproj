@@ -27,8 +27,6 @@
     <ClInclude Include="shared\read_tsp_utils\EdgeWeightType.h" />
     <ClInclude Include="shared\read_tsp_utils\EuclideanPointReader.h" />
     <ClInclude Include="shared\read_tsp_utils\euclidean_distance.h" />
-    <ClInclude Include="shared\read_tsp_utils\GeodesicPointReader.h" />
-    <ClInclude Include="shared\read_tsp_utils\geodesic_distance.h" />
     <ClInclude Include="shared\read_tsp_utils\point.h" />
     <ClInclude Include="shared\read_tsp_utils\PointReader.h" />
     <ClInclude Include="shared\read_tsp_utils\point_reader_factory.h" />

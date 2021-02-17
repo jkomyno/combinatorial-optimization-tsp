@@ -42,12 +42,6 @@
     <ClInclude Include="shared\read_tsp_utils\EuclideanPointReader.h">
       <Filter>read_tsp_utils</Filter>
     </ClInclude>
-    <ClInclude Include="shared\read_tsp_utils\geodesic_distance.h">
-      <Filter>read_tsp_utils</Filter>
-    </ClInclude>
-    <ClInclude Include="shared\read_tsp_utils\GeodesicPointReader.h">
-      <Filter>read_tsp_utils</Filter>
-    </ClInclude>
     <ClInclude Include="shared\read_tsp_utils\point.h">
       <Filter>read_tsp_utils</Filter>
     </ClInclude>
