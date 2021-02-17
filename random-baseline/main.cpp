@@ -6,21 +6,17 @@
 #include <shared/read_tsp_file.h>
 #include <shared/stopwatch.h>
 
+#include "cli.h"
 #include "RandomSolver.h"
 
 int main(int argc, char** argv) {
-    if (argc != 3) {
-        std::cerr << "2 argument required: timeout_ms, filename" << std::endl;
-        exit(1);
-    }
-
     /**
-     * read arguments
+     * Handler for command-line arguments
      */
-    std::chrono::duration timeout_ms = std::chrono::milliseconds(std::stoi(argv[1]));
-    const char* filename = argv[2];
+    auto args = cli::parse(argc, argv);
+    std::chrono::duration timeout_ms = std::chrono::milliseconds(args.timeout_ms);
 
-    auto point_reader(read_tsp_file(filename));
+    auto point_reader(read_tsp_file(args.filename.c_str()));
 
     const size_t N = point_reader->dimension;
     DistanceMatrix<double> distance_matrix = point_reader->create_distance_matrix();
