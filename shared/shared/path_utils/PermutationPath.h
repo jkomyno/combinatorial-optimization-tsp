@@ -1,7 +1,10 @@
 ﻿#pragma once
 
-#include <limits>  // std::numeric_limits
-#include <vector>  // std::vector
+#include <limits>    // std::numeric_limits
+#include <iostream>  // std::ostream
+#include <iterator>  // std::ostream_iterator
+#include <string>    // std::separator
+#include <vector>    // std::vector
 
 #include "../DistanceMatrix.h"
 #include "utils.h"
@@ -68,7 +71,7 @@ public:
         distance(other.distance) {
     }
 
-    PermutationPath<T>& operator=(const PermutationPath<T>& other) {
+    PermutationPath<T>& operator=(const PermutationPath<T>& other) noexcept {
         if (this != &other && &(this->distance_matrix) == &(other.distance_matrix)) {
             this->path = other.path;
             this->distance = other.distance;
@@ -77,7 +80,7 @@ public:
         return *this;
     }
 
-    PermutationPath<T>& operator=(PermutationPath<T>&& other) {
+    PermutationPath<T>& operator=(PermutationPath<T>&& other) noexcept {
         if (this != &other && &(this->distance_matrix) == &(other.distance_matrix)) {
             this->path = std::move(other.path);
             this->distance = other.distance;
@@ -156,5 +159,21 @@ public:
         using std::swap;
         swap(a.path, b.path);
         swap(a.distance, b.distance);
+    }
+
+    /**
+     * Pretty-print a permutation path
+     */
+    friend std::ostream& operator<<(std::ostream& os, const PermutationPath<T>& permutation_path) {
+        const char* separator = "->";
+        auto&& path = permutation_path.path;
+
+        // this leaves a trailing separator
+        std::copy(path.begin(), path.end(), std::ostream_iterator<size_t>(os, separator));
+        
+        // print the first element of the path again to represent a circuit
+        os << path[0];
+
+        return os;
     }
 };
