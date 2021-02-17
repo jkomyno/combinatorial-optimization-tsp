@@ -12,6 +12,9 @@ namespace cli {
         unsigned int& timeout_ms = kwarg("t,timeout-ms", "Timeout (in milliseconds)")
             .set_default(1000u);
 
+        bool& show_path = flag("s,show-path", "Show the path of the solution")
+            .set_default(false);
+
         double& mutation_probability = kwarg("m,mutation-probability", "GA mutation probability")
             .set_default(0.018317703302043006);
 

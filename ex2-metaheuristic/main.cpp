@@ -91,6 +91,10 @@ int main(int argc, char** argv) {
     std::cout << "N: " << N << '\n';
     std::cout << "program_time_ms: " << program_time_ms << '\n';
     std::cout << "was_interrupted: " << was_interrupted << '\n';
-    std::cout << "Solution cost: " << std::fixed << tsp_solver.get_best_solution().value().cost()
+    std::cout << "Solution cost: " << std::fixed << (tsp_solver.get_best_solution())->cost()
               << '\n';
+
+    if (args.show_path) {
+        std::cout << "Solution path:\n" << *(tsp_solver.get_best_solution()) << '\n';
+    }
 }
