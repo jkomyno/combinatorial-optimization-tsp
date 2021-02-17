@@ -27,16 +27,16 @@ class CPLEXModel {
     // cost matrix for the N points
     DistanceMatrix<T>& distance_matrix;
 
-	// number of points
-	const int N;
+    // number of points
+    const int N;
 
     // expected number of variables in the model
     const size_t n_variables;
 
-	// Setup the linear programming problem
-	void setup_lp() noexcept;
-
-	// Add a new column (variable) to the CPLEX environment.
+    // Setup the linear programming problem
+    void setup_lp() noexcept(false);
+    
+    // Add a new column (variable) to the CPLEX environment.
     // variable: letter of the variable being added.
     // type: type of the variable. 'C' for continuous variables, 'B' for {0, 1} variables.
     // lower_bound: lower bound of the variable.
@@ -44,20 +44,20 @@ class CPLEXModel {
     // ij: indexes of the variable.
     // objective_coefficient: objective function coefficient of the new variable.
     void add_column(char variable, char type, double lower_bound, double upper_bound,
-                    std::pair<size_t, size_t> ij, T objective_coefficient = 0) noexcept;
+                    std::pair<size_t, size_t> ij, T objective_coefficient = 0) noexcept(false);
 
-	// Tell CPLEX to use the parallel opportunistic mode
-	void setup_parallelism() noexcept;
+    // Tell CPLEX to use the parallel opportunistic mode
+    void setup_parallelism() noexcept(false);
 
     // Set the maximum allotted time for computation to the CPLEX environment
-    void force_time_limit(const std::chrono::milliseconds& timeout_ms) noexcept;
+    void force_time_limit(const std::chrono::milliseconds& timeout_ms) noexcept(false);
 
 public:
     CPLEXModel(DistanceMatrix<T>& distance_matrix,
-		       const std::chrono::milliseconds& timeout_ms) noexcept;
+		       const std::chrono::milliseconds& timeout_ms) noexcept(false);
 
 	// Release CPLEX resources
-    ~CPLEXModel() noexcept;
+    ~CPLEXModel() noexcept(false);
 
     void solve();
 
@@ -68,7 +68,7 @@ public:
 
 template <typename T>
 inline CPLEXModel<T>::CPLEXModel(DistanceMatrix<T>& distance_matrix,
-                                 const std::chrono::milliseconds& timeout_ms) noexcept :
+                                 const std::chrono::milliseconds& timeout_ms) noexcept(false) :
     distance_matrix(distance_matrix),
     N(static_cast<int>(distance_matrix.size())),
     n_variables((this->N - 1) * (2 * this->N - 1)) {
@@ -76,21 +76,21 @@ inline CPLEXModel<T>::CPLEXModel(DistanceMatrix<T>& distance_matrix,
         DECL_ENV(env);
         DECL_PROB(env, lp);
 
-		setup_parallelism();
+	setup_parallelism();
         force_time_limit(timeout_ms);
         setup_lp();
 }
 
 // Release CPLEX resources
 template <typename T>
-inline CPLEXModel<T>::~CPLEXModel() noexcept {
+inline CPLEXModel<T>::~CPLEXModel() noexcept(false) {
     CPXfreeprob(env, &lp);
     CPXcloseCPLEX(&env);
 }
 
 // Setup the linear programming problem
 template<typename T>
-inline void CPLEXModel<T>::setup_lp() noexcept {
+inline void CPLEXModel<T>::setup_lp() noexcept(false) {
 	/**
 	 * Decision variable declarations.
 	 * Since the variables must be referenced in the constraint declaration section,
@@ -251,7 +251,7 @@ inline void CPLEXModel<T>::setup_lp() noexcept {
 				};
 				double coeff[2] {
 					1,
-					-this->N + 1
+					static_cast<double>(-this->N + 1)
 				};
 
 				// right side: `<= 0`
@@ -270,7 +270,7 @@ inline void CPLEXModel<T>::setup_lp() noexcept {
 }
 
 template <typename T>
-inline void CPLEXModel<T>::setup_parallelism() noexcept {
+inline void CPLEXModel<T>::setup_parallelism() noexcept(false) {
 	auto n_threads = std::thread::hardware_concurrency();
 	CHECKED_CPX_CALL(CPXsetintparam, env, CPXPARAM_Threads, n_threads);
 	CHECKED_CPX_CALL(CPXsetintparam, env, CPXPARAM_Parallel, CPX_PARALLEL_OPPORTUNISTIC);
@@ -278,7 +278,7 @@ inline void CPLEXModel<T>::setup_parallelism() noexcept {
 
 // Set the maximum allotted time for computation to the CPLEX environment
 template<typename T>
-inline void CPLEXModel<T>::force_time_limit(const std::chrono::milliseconds& timeout_ms) noexcept {
+inline void CPLEXModel<T>::force_time_limit(const std::chrono::milliseconds& timeout_ms) noexcept(false) {
 	using namespace std::chrono;
 	double timeout_s = std::chrono::duration<double>(timeout_ms).count();
 
@@ -296,7 +296,7 @@ inline void CPLEXModel<T>::force_time_limit(const std::chrono::milliseconds& tim
 template <typename T>
 inline void CPLEXModel<T>::add_column(char variable, char type, double lower_bound,
                                       double upper_bound, std::pair<size_t, size_t> ij,
-                                      T objective_coefficient) noexcept {
+                                      T objective_coefficient) noexcept(false) {
 	auto&& [i, j] = ij;
 
 	// Compute the name of the new variable to add to the CPLEX environment
