@@ -6,21 +6,17 @@
 #include <shared/read_tsp_file.h>
 #include <shared/stopwatch.h>
 
+#include "cli.h"
 #include "CPLEXModel.h"
 
 int main(int argc, char** argv) {
-    if (argc != 3) {
-        std::cerr << "2 argument required: timeout_ms, filename" << std::endl;
-        exit(1);
-    }
-
     /**
-     * read arguments
+     * Handler for command-line arguments
      */
-    std::chrono::duration timeout_ms = std::chrono::milliseconds(std::stoi(argv[1]));
-    const char* filename = argv[2];
+    auto args = cli::parse(argc, argv);
+    std::chrono::duration timeout_ms = std::chrono::milliseconds(args.timeout_ms);
 
-    auto point_reader(read_tsp_file(filename));
+    auto point_reader(read_tsp_file(args.filename.c_str()));
 
     const size_t N = point_reader->dimension;
     DistanceMatrix<double> distance_matrix = point_reader->create_distance_matrix();
@@ -48,10 +44,12 @@ int main(int argc, char** argv) {
     std::optional<double> solution_cost = cplex_model.get_solution();
 
     if (solution_cost.has_value()) {
-        std::cout << "solution_cost: " << std::fixed << solution_cost.value() << '\n';
+        std::cout << "solution_cost: " << std::fixed << *solution_cost << '\n';
     } else {
         std::cout << "No solution found." << '\n';
     }
 
     std::cout << std::flush;
+
+    return 0;
 }
