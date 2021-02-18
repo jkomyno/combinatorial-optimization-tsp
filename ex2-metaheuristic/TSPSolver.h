@@ -1,12 +1,12 @@
 ﻿#pragma once
 
+#include <shared/DistanceMatrix.h>
+#include <shared/path_utils/PermutationPath.h>
+
 #include <algorithm>      // std::find_if
 #include <random>         // std::mt19937, std::random_device
 #include <unordered_set>  // std::unordered_set
 #include <vector>         // std::vector
-
-#include <shared/DistanceMatrix.h>
-#include <shared/path_utils/PermutationPath.h>
 
 #include "MetaHeuristicsParams.h"
 #include "Solver.h"
@@ -48,7 +48,7 @@ class TSPSolver : public Solver<PermutationPath<T>> {
     PermutationPath<T> heuristic_solution =
         TSPSolver::compute_initial_heuristic_solution<T>(this->distance_matrix);
 
-     // When stop is set to true, the solver should stop
+    // When stop is set to true, the solver should stop
     volatile bool stop_cond = false;
 
     // Compute the initial solution according to a heuristic.
@@ -131,9 +131,10 @@ protected:
     }
 
     // Compute the initial population pool of size μ
-    [[nodiscard]] std::vector<PermutationPath<T>>
-    compute_initial_population_pool() noexcept override {
-        return population::generate_initial(this->heuristic_solution, this->params.mu, this->random_generator);
+    [[nodiscard]] std::vector<PermutationPath<T>> compute_initial_population_pool() noexcept
+        override {
+        return population::generate_initial(this->heuristic_solution, this->params.mu,
+                                            this->random_generator);
     }
 
     // Compute the mating pool of size λ of the current iteration.
@@ -216,8 +217,6 @@ protected:
     }
 
     void init() noexcept {
-        // Generate half of the population with random permutations of the initial heuristic path,
-        // and the remaining half random permutations of the sorted path of cities [0,1,...,n-1]
         super::population_pool = this->compute_initial_population_pool();
 
         // Compute the best solution

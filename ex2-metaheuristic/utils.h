@@ -1,5 +1,7 @@
 ﻿#pragma once
 
+#include <shared/path_utils/utils.h>
+
 #include <algorithm>      // std::generate_n, std::max_element, std::find, std::rotate
 #include <iterator>       // std::next, std::inserter
 #include <limits>         // std::numeric_limits
@@ -8,8 +10,6 @@
 #include <unordered_map>  // std::unordered_map
 #include <unordered_set>  // std::unordered_set
 #include <vector>         // std::vector
-
-#include <shared/path_utils/utils.h>
 
 namespace utils {
     // Find the arc (i, j) that minimizes the value of w(i, r) - w(r, j) - w(i, j)

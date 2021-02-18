@@ -8,7 +8,6 @@
 #include <fstream>  // std::fstream
 
 #include "EdgeWeightType.h"
-
 #include "EuclideanPointReader.h"
 #include "PointReader.h"
 

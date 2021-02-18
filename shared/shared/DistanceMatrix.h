@@ -45,15 +45,13 @@ public:
     // distance(i, j) returns the distance between the i-th and j-th point.
     template <typename Distance>
     DistanceMatrix(size_t n_vertexes, Distance&& distance) noexcept :
-        Matrix<T>(n_vertexes, n_vertexes, T(0)),
-        n_vertexes(n_vertexes) {
+        Matrix<T>(n_vertexes, n_vertexes, T(0)), n_vertexes(n_vertexes) {
         init(std::forward<Distance>(distance));
     }
 
     // Constructor left for test purposes
     DistanceMatrix(const std::vector<T>& vec, size_t n_vertexes) noexcept :
-        Matrix<T>(n_vertexes, n_vertexes, vec),
-        n_vertexes(n_vertexes) {
+        Matrix<T>(n_vertexes, n_vertexes, vec), n_vertexes(n_vertexes) {
     }
 
     // Return number of rows/columns of the matrix

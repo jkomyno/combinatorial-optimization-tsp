@@ -1,14 +1,14 @@
 #pragma once
 
+#include <shared/DistanceMatrix.h>
+#include <shared/path_utils/PermutationPath.h>
+
 #include <algorithm>  // std::shuffle
 #include <atomic>     // std::atomic
 #include <chrono>     // std::chrono::duration
 #include <future>     // std::future
 #include <random>     // std::mt19937, std::random_device
 #include <thread>     // std::thread, std::this_thread
-
-#include <shared/DistanceMatrix.h>
-#include <shared/path_utils/PermutationPath.h>
 
 template <typename T>
 class RandomSolver {

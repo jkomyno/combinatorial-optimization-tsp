@@ -1,9 +1,9 @@
 ﻿#pragma once
 
+#include <shared/path_utils/PermutationPath.h>
+
 #include <algorithm>  // std::shuffle
 #include <vector>     // std::vector
-
-#include <shared/path_utils/PermutationPath.h>
 
 namespace population {
     namespace detail {

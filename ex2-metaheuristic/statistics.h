@@ -1,9 +1,9 @@
 #pragma once
 
+#include <shared/path_utils/PermutationPath.h>
+
 #include <algorithm>
 #include <vector>
-
-#include <shared/path_utils/PermutationPath.h>
 
 namespace statistics {
     template <typename T>

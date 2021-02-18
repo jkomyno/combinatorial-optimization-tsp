@@ -1,9 +1,9 @@
 #pragma once
 
+#include <shared/path_utils/PermutationPath.h>
+
 #include <algorithm>
 #include <vector>
-
-#include <shared/path_utils/PermutationPath.h>
 
 #include "mutation.h"
 #include "sampling.h"
@@ -74,14 +74,14 @@ namespace neighborhood {
     void variable_neighborhood_descent(PermutationPath<T>& path, URBG&& random_generator,
                                        size_t k_max = 3) noexcept {
         const size_t n = path.size();
-	
-        /*        
+
+        /*
         const auto get_indexes_dynamic = [&random_generator, n]() {
             return [&random_generator, n]() -> std::pair<size_t, size_t> {
                 return sampling::sample_pair<true>(1, n - 1, random_generator);
             };
         };
-	*/
+        */
 
         const auto get_indexes_static = [&random_generator, n]() {
             const auto ij = sampling::sample_pair<true>(1, n - 1, random_generator);

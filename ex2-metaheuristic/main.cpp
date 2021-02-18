@@ -1,18 +1,18 @@
-#include <chrono>    // std::chrono
-#include <iostream>  // std::cerr, std::cout, std::endl
-#include <string>    // std::stoi
-#include <thread>
-#include <mutex>
-#include <condition_variable>
-
 #include <shared/DistanceMatrix.h>
 #include <shared/path_utils/PermutationPath.h>
 #include <shared/read_tsp_file.h>
 #include <shared/stopwatch.h>
 
-#include "cli.h"
+#include <chrono>  // std::chrono
+#include <condition_variable>
+#include <iostream>  // std::cerr, std::cout, std::endl
+#include <mutex>
+#include <string>  // std::stoi
+#include <thread>
+
 #include "MetaHeuristicsParams.h"
 #include "TSPSolver.h"
+#include "cli.h"
 
 int main(int argc, char** argv) {
     /**
@@ -59,7 +59,7 @@ int main(int argc, char** argv) {
 
     TSPSolver<double> tsp_solver(distance_matrix, params);
 
-	std::mutex m;
+    std::mutex m;
     std::condition_variable cv;
     bool was_interrupted = false;
 
@@ -71,13 +71,13 @@ int main(int argc, char** argv) {
         cv.notify_one();
     });
 
-	{
+    {
         // blocks the main thread for timeout_ms milliseconds, or until the solver
         // finishes its task, whatever comes first.
         std::unique_lock<std::mutex> lock(m);
         cv.wait_for(lock, timeout_ms);
         tsp_solver.stop();
-	}
+    }
 
     thread_solver.join();
 

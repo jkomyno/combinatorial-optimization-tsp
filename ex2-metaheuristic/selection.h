@@ -1,10 +1,11 @@
 ﻿#pragma once
 
+#include <priority_queue/PriorityQueue.h>
+#include <shared/path_utils/PermutationPath.h>
+
 #include <algorithm>  // std::accumulate
 #include <cmath>      // std::exp
 #include <vector>     // std::vector
-
-#include <shared/path_utils/PermutationPath.h>
 
 #include "sampling.h"
 

@@ -1,9 +1,8 @@
 #pragma once
 
+#include <argparse/include/argparse/argparse.hpp>
 #include <iostream>  // std::cout
 #include <string>    // std::string
-
-#include <argparse/include/argparse/argparse.hpp>
 
 namespace cli {
     struct CLIArgs : public argparse::Args {

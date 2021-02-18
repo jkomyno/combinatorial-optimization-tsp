@@ -1,12 +1,12 @@
 #pragma once
 
+#include <shared/path_utils/PermutationPath.h>
+
 #include <algorithm>      // std::rotate
 #include <iterator>       // std::begin, std::end
 #include <unordered_set>  // std::unordered_set
 #include <utility>        // std::pair
 #include <vector>         // std::vector
-
-#include <shared/path_utils/PermutationPath.h>
 
 #include "sampling.h"
 

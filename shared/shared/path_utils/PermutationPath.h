@@ -1,8 +1,8 @@
 ﻿#pragma once
 
-#include <limits>    // std::numeric_limits
 #include <iostream>  // std::ostream
 #include <iterator>  // std::ostream_iterator
+#include <limits>    // std::numeric_limits
 #include <string>    // std::separator
 #include <vector>    // std::vector
 
@@ -48,20 +48,16 @@ public:
     }
 
     explicit PermutationPath(const path_t& path, const DistanceMatrix<T>& distance_matrix) :
-        path(path),
-        distance_matrix(distance_matrix) {
+        path(path), distance_matrix(distance_matrix) {
     }
 
     explicit PermutationPath(path_t&& path, const DistanceMatrix<T>& distance_matrix) :
-        path(std::move(path)),
-        distance_matrix(distance_matrix) {
+        path(std::move(path)), distance_matrix(distance_matrix) {
     }
 
     // Copy constructor
     PermutationPath(const PermutationPath<T>& other) noexcept :
-        path(other.path),
-        distance_matrix(other.distance_matrix),
-        distance(other.distance) {
+        path(other.path), distance_matrix(other.distance_matrix), distance(other.distance) {
     }
 
     // Move constructor
@@ -170,7 +166,7 @@ public:
 
         // this leaves a trailing separator
         std::copy(path.begin(), path.end(), std::ostream_iterator<size_t>(os, separator));
-        
+
         // print the first element of the path again to represent a circuit
         os << path[0];
 

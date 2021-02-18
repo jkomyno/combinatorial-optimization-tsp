@@ -1,6 +1,7 @@
 #pragma once
 
 #include <ilcplex/cplex.h>
+
 #include <cstring>
 #include <stdexcept>
 #include <string>

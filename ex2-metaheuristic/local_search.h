@@ -1,9 +1,9 @@
 #pragma once
 
+#include <shared/path_utils/PermutationPath.h>
+
 #include <cmath>   // std::log2
 #include <vector>  // std::vector
-
-#include <shared/path_utils/PermutationPath.h>
 
 #include "neighborhood.h"
 

@@ -24,15 +24,11 @@ protected:
 
 public:
     explicit Matrix(size_t rows, size_t cols, T default_value = T(0)) noexcept :
-        rows(rows),
-        cols(cols),
-        data(rows * cols, default_value) {
+        rows(rows), cols(cols), data(rows * cols, default_value) {
     }
 
     explicit Matrix(size_t rows, size_t cols, const std::vector<T>& vec) noexcept :
-        rows(rows),
-        cols(cols),
-        data(vec) {
+        rows(rows), cols(cols), data(vec) {
     }
 
     // iterator for the upper triangle of the matrix, useful for computing the maximum/minimum value
@@ -48,10 +44,7 @@ public:
         using iterator_category = std::forward_iterator_tag;
 
         explicit upper_triangular_iterator(pointer p, size_t N, size_t row, size_t column) :
-            p(p),
-            N(N),
-            row(row),
-            column(column) {
+            p(p), N(N), row(row), column(column) {
         }
 
         // Copy-assignment operator

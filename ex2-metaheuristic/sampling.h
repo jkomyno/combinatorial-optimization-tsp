@@ -1,12 +1,12 @@
 #pragma once
 
+#include <priority_queue/PriorityQueue.h>
+
 #include <algorithm>      // std::transform, std::generate
 #include <iterator>       // std::back_inserter
 #include <random>         // std::uniform_int_distribution, std::uniform_real_distribution
 #include <unordered_set>  // std::unordered_set
 #include <vector>         // std::vector
-
-#include <priority_queue/PriorityQueue.h>
 
 #include "utils.h"
 
