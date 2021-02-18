@@ -5,6 +5,7 @@
 #include <shared/DistanceMatrix.h>
 #include <shared/read_tsp_file.h>
 #include <shared/stopwatch.h>
+#include <shared/path_utils/PermutationPath.h>
 
 #include "cli.h"
 #include "CPLEXModel.h"
@@ -41,15 +42,20 @@ int main(int argc, char** argv) {
     std::cout << "program_time_ms: " << program_time_ms << '\n';
     std::cout << "was_interrupted: " << was_interrupted << '\n';
 
-    std::optional<double> solution_cost = cplex_model.get_solution();
+    std::optional<PermutationPath<double>> solution_path = cplex_model.get_solution();
 
-    if (solution_cost.has_value()) {
-        std::cout << "solution_cost: " << std::fixed << *solution_cost << '\n';
+    if (solution_path.has_value()) {
+        std::cout << "solution_cost: " << std::fixed << solution_path->cost() << '\n';
+
+        // Print path
+        if (args.show_path) {
+            std::cout << *solution_path << '\n';
+        }
+
     } else {
         std::cout << "No solution found." << '\n';
     }
 
     std::cout << std::flush;
-
     return 0;
 }

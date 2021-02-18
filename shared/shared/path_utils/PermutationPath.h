@@ -102,8 +102,8 @@ public:
 
     // Reset cost.
     // TODO: add way to compute updated cost after mutation without recomputing everything.
-    void reset_cost() noexcept {
-        this->distance = DISTANCE_NOT_COMPUTED;
+    void reset_cost(T new_distance = DISTANCE_NOT_COMPUTED) noexcept {
+        this->distance = new_distance;
     }
 
     /**

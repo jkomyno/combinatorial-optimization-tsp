@@ -23,6 +23,9 @@ protected:
     }
 
 public:
+    explicit Matrix() noexcept : rows(0), cols(0), data() {
+    }
+
     explicit Matrix(size_t rows, size_t cols, T default_value = T(0)) noexcept :
         rows(rows), cols(cols), data(rows * cols, default_value) {
     }
@@ -99,6 +102,16 @@ public:
         size_t row;
         size_t column;
     };
+
+    // Getter for rows
+    [[nodiscard]] size_t get_rows() const noexcept {
+        return this->rows;
+    }
+
+    // Getter for columns
+    [[nodiscard]] size_t get_cols() const noexcept {
+        return this->cols;
+    }
 
     // Return the raw T* distance matrix
     [[nodiscard]] const T* raw_data() const noexcept {

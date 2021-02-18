@@ -2,10 +2,13 @@
 
 #include <shared/DistanceMatrix.h>
 #include <shared/Matrix.h>
+#include <shared/path_utils/PermutationPath.h>
 
 #include <algorithm>  // std::fill_n
 #include <chrono>     // std::chrono::milliseconds
+#include <memory>     // std::unique_ptr, std::make_unique
 #include <optional>   // std::optional
+#include <queue>      // std::deque
 #include <sstream>    // std::stringstream
 #include <thread>     // std::thread::hardware_concurrency
 #include <utility>    // std::pair
@@ -34,6 +37,9 @@ class CPLEXModel {
     // expected number of variables in the model
     const size_t n_variables;
 
+    // pointer to map for y variables, used to retrieve the solution path
+    std::unique_ptr<Matrix<int>> y_variable_mat = nullptr;
+
     // Setup the linear programming problem
     void setup_lp() noexcept(false);
 
@@ -53,6 +59,9 @@ class CPLEXModel {
     // Set the maximum allotted time for computation to the CPLEX environment
     void force_time_limit(const std::chrono::milliseconds& timeout_ms) noexcept(false);
 
+    // Retrieve the Hamiltonian path of the solution
+    std::vector<size_t> retrieve_path(std::vector<double>&& variable_values) const noexcept;
+
 public:
     CPLEXModel(DistanceMatrix<T>& distance_matrix,
                const std::chrono::milliseconds& timeout_ms) noexcept(false);
@@ -64,7 +73,7 @@ public:
 
     // Retrieve the solution cost of the linear problem.
     // It must be called after the "solve" method.
-    std::optional<T> get_solution() const;
+    std::optional<PermutationPath<T>> get_solution() const;
 };
 
 template <typename T>
@@ -124,14 +133,14 @@ inline void CPLEXModel<T>::setup_lp() noexcept(false) {
 
     // y_position starts from the number of variables in the LP problem object
     int y_position = CPXgetnumcols(env, lp);
-    Matrix<int> y_variable_mat(this->N, this->N);
+    this->y_variable_mat = std::make_unique<Matrix<int>>(this->N, this->N);
 
     for (int i = 0; i < this->N; ++i) {
         for (int j = 0; j < this->N; ++j) {
             if (i != j) {
                 T objective_coefficient = this->distance_matrix.at(i, j);
                 add_column('y', 'B', 0, 1, {i, j}, objective_coefficient);
-                y_variable_mat.at(i, j) = y_position++;
+                this->y_variable_mat->at(i, j) = y_position++;
             }
         }
     }
@@ -201,7 +210,7 @@ inline void CPLEXModel<T>::setup_lp() noexcept(false) {
         int idx = 0;
         for (int j = 0; j < this->N; ++j) {
             if (i != j) {
-                left_size[idx++] = y_variable_mat.at(i, j);
+                left_size[idx++] = this->y_variable_mat->at(i, j);
             }
         }
 
@@ -228,7 +237,7 @@ inline void CPLEXModel<T>::setup_lp() noexcept(false) {
         int idx = 0;
         for (int i = 0; i < this->N; ++i) {
             if (i != j) {
-                left_size[idx++] = y_variable_mat.at(i, j);
+                left_size[idx++] = this->y_variable_mat->at(i, j);
             }
         }
 
@@ -246,7 +255,7 @@ inline void CPLEXModel<T>::setup_lp() noexcept(false) {
     for (int i = 0; i < this->N; ++i) {
         for (int j = 1; j < this->N; ++j) {
             if (i != j) {
-                int left_side[2]{x_variable_mat.at(i, j), y_variable_mat.at(i, j)};
+                int left_side[2]{x_variable_mat.at(i, j), this->y_variable_mat->at(i, j)};
                 double coeff[2]{1, static_cast<double>(-this->N + 1)};
 
                 // right side: `<= 0`
@@ -320,7 +329,7 @@ inline void CPLEXModel<T>::solve() {
 }
 
 template <typename T>
-inline std::optional<T> CPLEXModel<T>::get_solution() const {
+inline std::optional<PermutationPath<T>> CPLEXModel<T>::get_solution() const {
     try {
         // Access the solution objective value.
         double objective_value;
@@ -334,17 +343,54 @@ inline std::optional<T> CPLEXModel<T>::get_solution() const {
         // CPXENVptr env: The pointer to the CPLEX environment as returned by one of the
         // CPXopenCPLEX routines. CPXLPptr lp: A pointer to a CPLEX LP problem object as returned by
         // CPXcreateprob() double *x: An array to receive the values of the primal variables for the
-        // problem.
-        //            This array must be of length at least (end - begin + 1).
-        //            If successful, x[0] through x[end-begin] will contain the solution values.
+        // problem. If successful, x[0] through x[end-begin] will contain the solution values.
         // int begin: An integer indicating the beginning of the range of variable values to be
         // returned. int end: An integer indicating the end of the range of variable values to be
         // returned.
         CHECKED_CPX_CALL(CPXgetx, env, lp, variable_values.data(), 0, this->n_variables - 1);
 
-        return {objective_value};
+        // Compute permutation path with preset distance
+        PermutationPath<T> permutation_path(this->retrieve_path(std::move(variable_values)),
+                                            this->distance_matrix);
+        permutation_path.reset_cost(objective_value);
+
+        return {permutation_path};
     } catch (std::exception& e) {
         // No solution exists. We return an empty optional
         return {};
     }
+}
+
+template <typename T>
+inline std::vector<size_t> CPLEXModel<T>::retrieve_path(
+    std::vector<double>&& variable_values) const noexcept {
+
+    std::vector<size_t> path;
+    path.reserve(this->n_variables);
+
+    constexpr size_t depot = 0;
+
+    // The double-ended queue is used to efficiently perform a Breadth-First Search of the
+    // y variables to retrieve the solution, which is stored in path.
+    std::deque<size_t> deque;
+    deque.push_back(depot);
+
+    while (!deque.empty()) {
+        size_t c = deque.front();
+        deque.pop_front();
+
+        for (size_t j = 0; j < this->y_variable_mat->get_cols(); j++) {
+            if (c != j && variable_values[this->y_variable_mat->at(c, j)] == 1.0) {
+                path.emplace_back(c);
+
+                if (j != depot) {
+                    deque.push_back(j);
+                }
+
+                break;
+            }
+        }
+    }
+
+    return path;
 }

@@ -11,6 +11,8 @@ namespace cli {
         unsigned int& timeout_ms =
             kwarg("t,timeout-ms", "Timeout (in milliseconds)").set_default(1000u);
 
+        bool& show_path = flag("s,show-path", "Show the path of the solution").set_default(false);
+
         // Show introductory message to the users
         void welcome() override {
             std::cout << "CPLEX MILP solver\n";
