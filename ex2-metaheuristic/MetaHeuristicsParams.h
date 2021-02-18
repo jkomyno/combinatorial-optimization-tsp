@@ -26,8 +26,4 @@ struct MetaHeuristicsParams {
     // Size of the tournament.
     // Acceptable range: [2, mu]
     size_t tournament_k;
-
-    // Number of random restarts.
-    // Acceptable range: [1, +infinity)
-    size_t restarts = 1;
 };

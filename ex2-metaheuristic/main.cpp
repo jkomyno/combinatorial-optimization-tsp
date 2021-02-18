@@ -42,10 +42,7 @@ int main(int argc, char** argv) {
 		args.max_gen,
 
 		// tournament_k
-		args.k,
-
-		// restarts
-		1
+		args.k
 	};
     // clang-format on
 
