@@ -10,7 +10,7 @@ In this report, we discuss two different implementations of the symmetric Travel
 The second approach uses a metaheuristic method based on Genetic Algorithms, Local Search, and the Farthest Insertion heuristic. Multiple crossover and mutation operators, as well as several strategies for evolving the genetic pool are examined. 
 We test our implementations on both real-world datasets and simulated (but hopefully realistic) instances, with sizes ranging from `10` to `1665` nodes. The metaheuristic method is calibrated on a subset of the simulated datasets.
 Finally, we present a detailed comparison between the exact and metaheuristic implementations in terms of running times and gaps with respect to the optimal solutions, also confronting the two algorithms with a random baseline method.
-We perform a benchmark of our implementations running the same TSP instances $11$ times and collecting relevant about the fluctuations of the given solutions.
+We perform a benchmark of our implementations running the same TSP instances 11 times and collecting relevant about the fluctuations of the given solutions.
 
 ## Deliverables
 
